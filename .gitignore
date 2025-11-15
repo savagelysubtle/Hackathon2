@@ -15,10 +15,21 @@ dist
 **/.eslintcache
 
 .env
+.env.local
+.env.production.local
+.env.development.local
 .ipynb_checkpoints
+
+# Next.js
+.next/
+out/
+build
 
 # Warden Agent Kit (now using npm package)
 warden-agent-kit/
+
+# Dashboard (now integrated into root)
+dashboard/
 
 # LangGraph API
 .langgraph_api
