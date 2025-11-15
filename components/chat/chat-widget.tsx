@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Minimize2, MessageCircle, Loader2 } from 'lucide-react';
+import { Send, Minimize2, MessageCircle, Loader2, AlertCircle, Key } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import Link from 'next/link';
 
 interface Message {
   role: 'user' | 'agent';
@@ -23,7 +25,27 @@ export function ChatWidget() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [mode, setMode] = useState<'demo' | 'full-user' | 'full-server' | null>(null);
+  const [apiKey, setApiKey] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Load API key from localStorage on mount
+  useEffect(() => {
+    const storedKey = localStorage.getItem("openai_api_key");
+    if (storedKey) {
+      setApiKey(storedKey);
+    }
+  }, []);
+
+  // Re-check API key when widget opens
+  useEffect(() => {
+    if (isOpen) {
+      const storedKey = localStorage.getItem("openai_api_key");
+      if (storedKey) {
+        setApiKey(storedKey);
+      }
+    }
+  }, [isOpen]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -50,7 +72,10 @@ export function ChatWidget() {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({
+          message: input,
+          userApiKey: apiKey || undefined // Send user's key if they have one
+        }),
       });
 
       if (!response.ok) {
@@ -91,6 +116,8 @@ export function ChatWidget() {
                   }
                   return newMessages;
                 });
+              } else if (data.type === 'mode') {
+                setMode(data.mode); // Track what mode we're in
               } else if (data.type === 'error') {
                 throw new Error(data.error);
               }
@@ -152,6 +179,42 @@ export function ChatWidget() {
             </Button>
           </div>
 
+          {/* Mode Indicator Banner */}
+          {mode === 'demo' && (
+            <Alert className="m-3 bg-blue-50 border-blue-200">
+              <AlertCircle className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-800 text-xs">
+                <strong>Demo Mode</strong> - Simulated responses.{' '}
+                <Link href="/settings" className="underline font-medium">
+                  Add API key
+                </Link>{' '}
+                for real AI.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {!apiKey && !mode && (
+            <Alert className="m-3 bg-yellow-50 border-yellow-200">
+              <Key className="h-4 w-4 text-yellow-600" />
+              <AlertDescription className="text-yellow-800 text-xs">
+                <strong>No API Key</strong> - Using demo mode.{' '}
+                <Link href="/settings" className="underline font-medium">
+                  Add your key
+                </Link>{' '}
+                for full features.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {apiKey && mode === 'full-user' && (
+            <Alert className="m-3 bg-green-50 border-green-200">
+              <Key className="h-4 w-4 text-green-600" />
+              <AlertDescription className="text-green-800 text-xs">
+                <strong>Full Mode</strong> - Using your API key for unlimited queries.
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.map((msg, i) => (
@@ -206,7 +269,7 @@ export function ChatWidget() {
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Try: "Create a SOL trigger" or "What's my portfolio status?"
+              Try: "Create a SOL trigger" or "Show my portfolio"
             </p>
           </div>
         </Card>

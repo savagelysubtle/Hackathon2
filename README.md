@@ -51,6 +51,8 @@ Automated system verification, balance checks, and status reporting.
 | **DEX Swaps** | Smart trade execution with slippage protection | ✅ Working |
 | **🎨 Interactive Dashboard** | Professional web UI with live data | ✅ **NEW!** |
 | **💬 Agent Chat** | Natural language control interface | ✅ **NEW!** |
+| **🎭 Demo Mode** | Works without API key - $0 cost | ✅ **NEW!** |
+| **🔑 BYOK (Bring Your Own Key)** | Use your own OpenAI key | ✅ **NEW!** |
 | **🔐 Wallet Connection** | Multi-user support with MetaMask | ✅ **NEW!** |
 | **📊 Real-Time Updates** | Live balance & price updates | ✅ **NEW!** |
 | **State Management** | On-chain activity logging in Warden Spaces | ✅ Working |
@@ -92,8 +94,27 @@ RecurringExecutorAgent (Main Integration Layer)
 
 ### **Prerequisites**
 - [Bun](https://bun.sh) installed
-- OpenAI API key
+- OpenAI API key (**OPTIONAL** - works in demo mode without it!)
 - Ethereum wallet (MetaMask recommended)
+
+### **🎭 Demo Mode vs Full Mode**
+
+**The dashboard works WITHOUT an API key!**
+
+| Mode | What You Get | Cost | Setup Time |
+|------|-------------|------|------------|
+| **🎭 Demo Mode** | ✅ Full UI/UX<br>✅ Simulated AI responses<br>✅ All features visible<br>✅ Perfect for testing | **$0** | 0 seconds |
+| **🚀 Full Mode** | ✅ Real OpenAI-powered AI<br>✅ Live trade execution<br>✅ Natural language control<br>✅ Unlimited queries | **~$0.01 per query**<br>(you pay OpenAI directly) | 2 minutes |
+
+**To unlock Full Mode:**
+1. Get your FREE OpenAI API key at [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+2. Open the dashboard → Settings
+3. Paste your key → Save
+4. Done! 🎉
+
+**Your key is stored locally** (browser only) and never sent to our servers. You pay OpenAI directly for usage.
+
+**Pro tip**: New OpenAI accounts get $5 in free credits = ~500 queries! 💰
 
 ### **Installation & Setup**
 

@@ -166,11 +166,12 @@ export class ChatAgent {
   private llm: ChatOpenAI;
   private tools: DynamicStructuredTool[];
 
-  constructor() {
-    const apiKey = process.env.OPENAI_API_KEY;
+  constructor(customApiKey?: string) {
+    // Use custom API key if provided, otherwise fall back to env variable
+    const apiKey = customApiKey || process.env.OPENAI_API_KEY;
 
     if (!apiKey) {
-      throw new Error('OPENAI_API_KEY environment variable is not set');
+      throw new Error('OPENAI_API_KEY environment variable is not set and no custom key provided');
     }
 
     this.llm = new ChatOpenAI({
@@ -245,10 +246,16 @@ When users ask about triggers or portfolio, use the appropriate tools to get cur
   }
 }
 
-// Singleton instance
+// Singleton instance - no longer used with custom keys
 let chatAgentInstance: ChatAgent | null = null;
 
-export function getChatAgent(): ChatAgent {
+export function getChatAgent(customApiKey?: string): ChatAgent {
+  // If a custom key is provided, always create a new instance
+  if (customApiKey) {
+    return new ChatAgent(customApiKey);
+  }
+
+  // Otherwise use singleton for default instance
   if (!chatAgentInstance) {
     chatAgentInstance = new ChatAgent();
   }

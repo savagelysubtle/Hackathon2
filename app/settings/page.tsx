@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Settings as SettingsIcon, Save } from "lucide-react";
+import { ApiKeySettings } from "@/components/ApiKeySettings";
 
 export default function SettingsPage() {
   return (
@@ -14,6 +15,9 @@ export default function SettingsPage() {
           Configure agent parameters and preferences
         </p>
       </div>
+
+      {/* API Key Settings - First for visibility */}
+      <ApiKeySettings />
 
       <Card>
         <CardHeader>
