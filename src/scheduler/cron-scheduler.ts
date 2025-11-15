@@ -35,7 +35,7 @@ interface JobLog {
  *   - "0-59/5 * * * *" = Every 5 minutes
  */
 export class CronScheduler {
-    private jobs: Map<string, cron.ScheduledTask> = new Map();
+    private jobs: Map<string, ReturnType<typeof cron.schedule>> = new Map();
     private jobConfigs: Map<string, ScheduledJob> = new Map();
     private executionLogs: JobLog[] = [];
     private maxLogs: number = 100;
@@ -67,11 +67,11 @@ export class CronScheduler {
             job.schedule,
             async () => {
                 await this.executeJob(job);
-            },
-            {
-                scheduled: false, // Don't start automatically
             }
         );
+
+        // Stop it immediately, we'll start it later
+        task.stop();
 
         // Store job
         this.jobs.set(job.id, task);

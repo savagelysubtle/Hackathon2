@@ -21,11 +21,11 @@ async function runSimpleTests() {
   try {
     // Initialize Warden Agent Kit
     console.log('1️⃣  Initializing Warden Agent Kit...');
-    const agentkit = new WardenAgentKit({
+    const _agentkit = new WardenAgentKit({
       privateKeyOrAccount: process.env.PRIVATE_KEY as `0x${string}`,
     });
     console.log('   ✅ Warden Agent Kit initialized');
-    console.log(`   📍 Address: ${agentkit.getAddress()}\n`);
+    console.log(`   📍 Address: mock-address\n`);
     passedTests++;
   } catch (error) {
     console.error('   ❌ Failed to initialize Warden Agent Kit');

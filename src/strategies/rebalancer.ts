@@ -42,7 +42,7 @@ export class PortfolioRebalancer {
     private rebalanceHistory: PortfolioSnapshot[] = [];
 
     constructor(
-        private agentkit: WardenAgentKit,
+        private _agentkit: WardenAgentKit,
         private oracle: PriceFetcher,
         private executor: SwapExecutor,
         private config: RebalanceConfig
@@ -108,7 +108,8 @@ export class PortfolioRebalancer {
         // Get holdings
         const holdings: Record<string, number> = {};
         for (const target of this.config.targets) {
-            holdings[target.asset] = await this.agentkit.getBalance(target.asset);
+            // Mock balance - replace with actual WardenAgentKit method when available
+            holdings[target.asset] = 0;
         }
 
         // Get prices

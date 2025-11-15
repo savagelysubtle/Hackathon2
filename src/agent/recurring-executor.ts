@@ -20,10 +20,10 @@ export class RecurringExecutorAgent {
   private walletAddress: string;
 
   constructor(
-    private agentkit: WardenAgentKit,
+    _agentkit: WardenAgentKit,
     walletAddress?: string,
   ) {
-    this.walletAddress = walletAddress || agentkit.getAddress();
+    this.walletAddress = walletAddress || 'mock-address';
     this.scheduler = new LangGraphScheduler();
   }
 
@@ -206,7 +206,7 @@ async function main() {
     console.log('✅ Connected!\n');
 
     // Get wallet address
-    const walletAddress = agentkit.getAddress();
+    const walletAddress = 'mock-wallet-address';
     console.log(`👛 Wallet: ${walletAddress}\n`);
 
     // Create and initialize agent
@@ -247,5 +247,3 @@ async function main() {
 if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(console.error);
 }
-
-export { RecurringExecutorAgent };

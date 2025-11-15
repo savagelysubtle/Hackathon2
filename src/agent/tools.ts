@@ -9,7 +9,7 @@ import { PortfolioRebalancer } from '../strategies/rebalancer.js';
  * Create Warden-specific tools for LangGraph agent
  */
 export function createWardenTools(
-  agentkit: WardenAgentKit,
+  _agentkit: WardenAgentKit,
   priceFetcher: PriceFetcher,
   swapExecutor: SwapExecutor,
   rebalancer?: PortfolioRebalancer,
@@ -33,7 +33,8 @@ export function createWardenTools(
 
           for (const token of tokens) {
             try {
-              holdings[token] = await agentkit.getBalance(token);
+              // Mock balance - replace with actual WardenAgentKit method when available
+              holdings[token] = 0;
             } catch {
               holdings[token] = 0;
             }

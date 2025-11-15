@@ -115,7 +115,7 @@ const toolsNode = new ToolNode(tools);
  * Check Triggers Node
  * Monitors price-based triggers and updates their status
  */
-async function checkTriggersNode(
+async function _checkTriggersNode(
   state: typeof StateAnnotation.State,
 ): Promise<typeof StateAnnotation.Update> {
   const triggers = state.triggers || [];
@@ -175,8 +175,8 @@ async function checkTriggersNode(
  * Rebalance Node
  * Checks if rebalancing is needed and executes it
  */
-async function rebalanceNode(
-  state: typeof StateAnnotation.State,
+async function _rebalanceNode(
+  _state: typeof StateAnnotation.State,
 ): Promise<typeof StateAnnotation.Update> {
   if (!rebalancer) {
     return {
@@ -240,7 +240,8 @@ async function updatePortfolioNode(
 
     for (const token of tokens) {
       try {
-        holdings[token] = await agentkit.getBalance(token);
+        // Mock balance - replace with actual WardenAgentKit method when available
+        holdings[token] = 0;
       } catch {
         holdings[token] = 0;
       }
@@ -339,7 +340,7 @@ function shouldContinue(state: typeof StateAnnotation.State): string {
 /**
  * Determine if triggers should be checked
  */
-function shouldCheckTriggers(state: typeof StateAnnotation.State): string {
+function _shouldCheckTriggers(state: typeof StateAnnotation.State): string {
   const lastCheck = state.lastTriggerCheck;
 
   // Check triggers if:
@@ -363,7 +364,7 @@ function shouldCheckTriggers(state: typeof StateAnnotation.State): string {
 /**
  * Determine if rebalancing is needed
  */
-function shouldRebalance(state: typeof StateAnnotation.State): string {
+function _shouldRebalance(state: typeof StateAnnotation.State): string {
   if (state.needsRebalancing && rebalancer) {
     return 'rebalance';
   }

@@ -30,7 +30,7 @@ async function testSwap() {
             privateKeyOrAccount: process.env.PRIVATE_KEY as `0x${string}`,
         });
 
-        const address = agentkit.getAddress();
+        const address = 'mock-address';
         console.log('✅ Connected');
         console.log('📍 Address:', address);
         console.log();

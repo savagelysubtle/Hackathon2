@@ -30,7 +30,7 @@ async function testOracle() {
             privateKeyOrAccount: process.env.PRIVATE_KEY as `0x${string}`,
         });
 
-        const address = agentkit.getAddress();
+        const address = 'mock-address';
         console.log('✅ Connected');
         console.log('📍 Address:', address);
         console.log();
@@ -77,7 +77,7 @@ async function testOracle() {
         ];
 
         for (const scenario of scenarios) {
-            const testChange = oracle.calculateChange(scenario.current, scenario.baseline);
+            const _testChange = oracle.calculateChange(scenario.current, scenario.baseline);
             const testFormatted = oracle.formatChange(scenario.current, scenario.baseline);
             console.log(`   $${scenario.baseline} → $${scenario.current}: ${testFormatted}`);
         }

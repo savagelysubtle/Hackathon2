@@ -81,10 +81,10 @@ async function testScheduler() {
     console.log('Test 5: Recent Execution Logs');
     console.log('═══════════════════════════════════════════════════');
     const logs = scheduler.getExecutionLogs(undefined, 5);
-    logs.forEach((log, i) => {
-        const status = log.success ? '✅' : '❌';
-        const time = new Date(log.timestamp).toISOString();
-        console.log(`   ${status} ${log.jobId} - ${time} (${log.duration}ms)`);
+    logs.forEach((_log, _i) => {
+        const status = _log.success ? '✅' : '❌';
+        const time = new Date(_log.timestamp).toISOString();
+        console.log(`   ${status} ${_log.jobId} - ${time} (${_log.duration}ms)`);
     });
     console.log();
 

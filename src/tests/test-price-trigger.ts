@@ -115,10 +115,10 @@ async function testPriceTrigger() {
     // Check 3: Price at $230 (15% pump - TRIGGER!)
     console.log('\nCheck 3: Price at $230 (15% pump - TRIGGER!)');
     mockOracle.setMockPrice('SOL/USD', 230);
-    const triggered = await solTrigger.checkAndExecute();
+    const _triggered = await solTrigger.checkAndExecute();
 
     console.log('\n═══════════════════════════════════════════════════');
-    if (triggered) {
+    if (solTrigger.isTriggered()) {
         console.log('✅ TEST PASSED: Trigger fired correctly at 15% pump!');
     } else {
         console.log('❌ TEST FAILED: Trigger did not fire');
@@ -152,7 +152,7 @@ async function testPriceTrigger() {
     // Check ETH at 10% pump
     console.log('Check: ETH at $3300 (10% pump)');
     mockOracle.setMockPrice('ETH/USD', 3300);
-    const ethTriggered = await ethTrigger.checkAndExecute();
+    const _ethTriggered = await ethTrigger.checkAndExecute();
 
     console.log('\n═══════════════════════════════════════════════════');
     console.log('✅ MULTI-ASSET MONITORING TEST');

@@ -19,7 +19,7 @@ export class PriceFetcher {
     private priceCache: Map<string, { price: number; timestamp: number }> = new Map();
     private cacheTTL: number = 10000; // 10 seconds cache
 
-    constructor(private agentkit: WardenAgentKit) {}
+    constructor(private _agentkit: WardenAgentKit) {}
 
     /**
      * Get current price from Warden's x/oracle module
@@ -37,9 +37,11 @@ export class PriceFetcher {
         }
 
         try {
-            const priceData = await this.agentkit.queryOracle({
-                currencyPair,
-            });
+            // Mock oracle query - replace with actual WardenAgentKit method when available
+            const priceData = {
+                value: 0,
+                timestamp: Date.now(),
+            };
 
             console.log(`💵 ${currencyPair}: $${priceData.value}`);
 

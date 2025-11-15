@@ -7,7 +7,7 @@ import { graph } from '../agent/graph.js';
  * Integrates LangGraph agent with scheduled jobs
  */
 export class LangGraphScheduler {
-  private jobs: Map<string, cron.ScheduledTask> = new Map();
+  private jobs: Map<string, ReturnType<typeof cron.schedule>> = new Map();
 
   /**
    * Schedule rebalancing checks
@@ -269,7 +269,8 @@ export class LangGraphScheduler {
       return null;
     }
 
-    return job.getStatus();
+    const status = job.getStatus();
+    return status.toString();
   }
 }
 

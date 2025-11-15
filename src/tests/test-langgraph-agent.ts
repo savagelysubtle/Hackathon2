@@ -17,7 +17,7 @@ dotenv.config();
  */
 
 describe('LangGraph Agent', () => {
-  let agentkit: WardenAgentKit;
+  let _agentkit: WardenAgentKit;
   const testWalletAddress = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb2';
 
   beforeAll(() => {
@@ -25,7 +25,7 @@ describe('LangGraph Agent', () => {
       throw new Error('PRIVATE_KEY not found in .env');
     }
 
-    agentkit = new WardenAgentKit({
+    _agentkit = new WardenAgentKit({
       privateKeyOrAccount: process.env.PRIVATE_KEY as `0x${string}`,
     });
   });
