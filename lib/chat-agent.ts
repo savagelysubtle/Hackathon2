@@ -163,7 +163,7 @@ const getTriggersTool = new DynamicStructuredTool({
  * ChatAgent - Manages AI-powered chat interactions
  */
 export class ChatAgent {
-  private llm: ChatOpenAI;
+  private llm?: ChatOpenAI; // Make optional since we might not have an API key
   private tools: DynamicStructuredTool[];
 
   constructor(customApiKey?: string) {
@@ -171,15 +171,20 @@ export class ChatAgent {
     const apiKey = customApiKey || process.env.OPENAI_API_KEY;
 
     if (!apiKey) {
-      throw new Error('OPENAI_API_KEY environment variable is not set and no custom key provided');
+      // Don't throw - let the route handler deal with missing keys
+      // This allows the class to be imported without breaking the build
+      console.warn('ChatAgent initialized without API key - will not be functional');
     }
 
-    this.llm = new ChatOpenAI({
-      modelName: 'gpt-4o-mini',
-      temperature: 0.7,
-      streaming: true,
-      openAIApiKey: apiKey,
-    });
+    // Only initialize LLM if we have an API key
+    if (apiKey) {
+      this.llm = new ChatOpenAI({
+        modelName: 'gpt-4o-mini',
+        temperature: 0.7,
+        streaming: true,
+        openAIApiKey: apiKey,
+      });
+    }
 
     this.tools = [
       createTriggerTool,
@@ -192,6 +197,10 @@ export class ChatAgent {
   }
 
   async chat(message: string): Promise<string> {
+    if (!this.llm) {
+      throw new Error('ChatAgent not initialized with API key');
+    }
+
     try {
       const systemPrompt = `You are a helpful DeFi portfolio management assistant for the Recurring Executor Agent dashboard.
 
@@ -226,6 +235,11 @@ When users ask about triggers or portfolio, use the appropriate tools to get cur
   }
 
   async *chatStream(message: string): AsyncGenerator<string> {
+    if (!this.llm) {
+      yield 'Sorry, the chat agent is not properly configured. Please check your API key settings.';
+      return;
+    }
+
     try {
       const systemPrompt = `You are a helpful DeFi portfolio management assistant. Be concise and use emojis.`;
 
