@@ -10,8 +10,8 @@
 
 > **The ONLY AI agent with on-chain state storage via Warden Spaces. Production-ready DeFi portfolio automation with 12 AI tools, beautiful dashboard, and instant demo mode.**
 
-**Built for**: [Warden Protocol Builder Incentive Program](https://wardenprotocol.org/blog/agent-builder-incentive-programme)  
-**Status**: ✅ **PRODUCTION-READY & DEPLOYED!**  
+**Built for**: [Warden Protocol Builder Incentive Program](https://wardenprotocol.org/blog/agent-builder-incentive-programme)
+**Status**: ✅ **PRODUCTION-READY & DEPLOYED!**
 **Live Demo**: [https://hackathon2-agent.vercel.app](https://hackathon2-agent.vercel.app)
 
 ---
