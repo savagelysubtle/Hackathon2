@@ -283,9 +283,9 @@ export function createWardenTools(
       schema: z.object({
         portfolio: z
           .object({
-            allocations: z.record(z.number()).describe('Current allocations'),
+            allocations: z.record(z.string(), z.number()).describe('Current allocations'),
             targetAllocations: z
-              .record(z.number())
+              .record(z.string(), z.number())
               .describe('Target allocations'),
             driftThreshold: z.number().describe('Drift threshold percentage'),
           })

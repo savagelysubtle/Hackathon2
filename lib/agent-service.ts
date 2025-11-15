@@ -3,12 +3,14 @@
  * This service manages triggers, portfolio rebalancing, and scheduler jobs
  */
 
-import { RecurringExecutorAgent } from '../../src/agent/recurring-executor';
-import { PriceTrigger } from '../../src/triggers/price-trigger';
-import { CronScheduler } from '../../src/scheduler/cron-scheduler';
-import { PortfolioRebalancer } from '../../src/strategies/rebalancer';
-import { PriceFetcher } from '../../src/oracle/price-fetcher';
-import { SwapExecutor } from '../../src/executor/swap-executor';
+// Mock imports - dashboard should connect to agent via API, not direct imports
+// The src/ directory contains Node.js code that won't work in the browser
+// import { RecurringExecutorAgent } from '../../src/agent/recurring-executor';
+// import { PriceTrigger } from '../../src/triggers/price-trigger';
+// import { CronScheduler } from '../../src/scheduler/cron-scheduler';
+// import { PortfolioRebalancer } from '../../src/strategies/rebalancer';
+// import { PriceFetcher } from '../../src/oracle/price-fetcher';
+// import { SwapExecutor } from '../../src/executor/swap-executor';
 
 export interface TriggerConfig {
   id: string;

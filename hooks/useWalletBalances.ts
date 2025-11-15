@@ -75,15 +75,16 @@ export function useWalletBalances(tokens: TokenConfig[] = Object.values(DEFAULT_
     if (!address) return [];
 
     return tokens.map((token) => ({
-      address: token.address,
+      address: token.address as `0x${string}`,
       abi: ERC20_ABI,
-      functionName: 'balanceOf' as const,
+      functionName: 'balanceOf',
       args: [address],
     }));
   }, [address, tokens]);
 
+  // @ts-ignore - Type inference is too deep for wagmi useReadContracts
   const { data: tokenBalances, isLoading: tokensLoading } = useReadContracts({
-    contracts,
+    contracts: contracts as any,
     query: {
       enabled: isConnected && !!address && contracts.length > 0,
       refetchInterval: 30000,

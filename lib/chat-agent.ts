@@ -130,7 +130,7 @@ const getPortfolioTool = new DynamicStructuredTool({
   },
 });
 
-const getTriggersT ool = new DynamicStructuredTool({
+const getTriggersTool = new DynamicStructuredTool({
   name: 'get_triggers',
   description: 'List all active price triggers',
   schema: z.object({}),
@@ -186,7 +186,7 @@ export class ChatAgent {
       pauseJobTool,
       resumeJobTool,
       getPortfolioTool,
-      getTriggersT ool,
+      getTriggersTool,
     ];
   }
 
