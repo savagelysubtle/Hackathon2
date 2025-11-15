@@ -4,14 +4,22 @@ import { z } from 'zod';
 import { SwapExecutor } from '../executor/swap-executor.js';
 import { PriceFetcher } from '../oracle/price-fetcher.js';
 import { PortfolioRebalancer } from '../strategies/rebalancer.js';
+import { WardenSpacesManager } from '../warden/spaces-manager.js';
+import {
+  createPortfolioAnalysisTool,
+  createMarketInsightsTool,
+  createTriggerRecommendationsTool,
+  createExecutionHistoryTool,
+} from './enhanced-tools.js';
 
 /**
  * Create Warden-specific tools for LangGraph agent
  */
 export function createWardenTools(
-  _agentkit: WardenAgentKit,
+  agentkit: WardenAgentKit,
   priceFetcher: PriceFetcher,
   swapExecutor: SwapExecutor,
+  spacesManager: WardenSpacesManager,
   rebalancer?: PortfolioRebalancer,
 ) {
   return [
@@ -125,11 +133,15 @@ export function createWardenTools(
             created: new Date().toISOString(),
           };
 
+          // 💾 Save trigger to Warden Space (on-chain storage!)
+          await spacesManager.saveTrigger(trigger);
+
           return JSON.stringify(
             {
               success: true,
               trigger,
               message: `✅ Created trigger: ${action} when ${asset} ${condition}s ${Math.abs(threshold)}%`,
+              storedOnChain: spacesManager.isOnChain() ? '✅ Saved to Warden Chain' : '📝 Saved locally',
             },
             null,
             2,
@@ -437,5 +449,19 @@ export function createWardenTools(
         }
       },
     }),
+
+    // ==================== ENHANCED AI TOOLS ====================
+
+    // Portfolio Analysis
+    createPortfolioAnalysisTool(priceFetcher, spacesManager),
+
+    // Market Insights
+    createMarketInsightsTool(priceFetcher),
+
+    // Trigger Recommendations
+    createTriggerRecommendationsTool(priceFetcher, spacesManager),
+
+    // Execution History
+    createExecutionHistoryTool(spacesManager),
   ];
 }

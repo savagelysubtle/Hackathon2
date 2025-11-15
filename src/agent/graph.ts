@@ -8,6 +8,7 @@ import * as dotenv from 'dotenv';
 import { SwapExecutor } from '../executor/swap-executor.js';
 import { PriceFetcher } from '../oracle/price-fetcher.js';
 import { PortfolioRebalancer } from '../strategies/rebalancer.js';
+import { getSpacesManager } from '../warden/spaces-manager.js';
 import { Portfolio, StateAnnotation, Trigger } from './state.js';
 import { createWardenTools } from './tools.js';
 
@@ -22,6 +23,9 @@ const wardenConfig = {
 };
 
 const agentkit = new WardenAgentKit(wardenConfig);
+
+// Initialize Warden Spaces Manager for on-chain state storage
+const spacesManager = getSpacesManager(agentkit, { useOnChain: false }); // Set to true for production
 
 // Initialize supporting services
 const priceFetcher = new PriceFetcher(agentkit);
@@ -47,6 +51,7 @@ const tools = createWardenTools(
   agentkit,
   priceFetcher,
   swapExecutor,
+  spacesManager,
   rebalancer,
 );
 
@@ -88,8 +93,14 @@ You have access to the following tools:
 - rebalance_portfolio: Execute rebalancing
 - get_price: Get current asset price
 - get_multiple_prices: Get multiple asset prices
+- analyze_portfolio: Deep portfolio analysis with recommendations
+- get_market_insights: Market sentiment and technical analysis
+- recommend_triggers: Intelligent trigger suggestions
+- get_execution_history: View historical executions from Warden Space
 
 Always be clear about which blockchain operations you're performing and confirm high-value actions before executing them.
+
+Note: All trigger and portfolio state is stored on Warden Chain for persistence and multi-user support!
 
 Current State:
 ${state.portfolio ? `- Portfolio: $${state.portfolio.totalValue.toFixed(2)} total value, ${state.portfolio.drift.toFixed(1)}% drift` : '- Portfolio: Not loaded'}

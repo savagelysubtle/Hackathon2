@@ -20,6 +20,7 @@
     "test:oracle": "bun run src/tests/test-oracle.ts",
     "test:trigger": "bun run src/tests/test-price-trigger.ts",
     "test:langgraph": "bun run src/tests/test-langgraph-agent.ts",
+    "test:spaces": "bun run src/tests/test-warden-spaces.ts",
     "agent:start": "bun run src/agent/recurring-executor.ts"
   },
   "dependencies": {
