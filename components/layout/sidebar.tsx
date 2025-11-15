@@ -11,6 +11,7 @@ import {
   Activity,
   Settings,
   Zap,
+  BarChart3,
 } from "lucide-react";
 
 const navigation = [
@@ -18,6 +19,7 @@ const navigation = [
   { name: "Portfolio", href: "/portfolio", icon: Wallet },
   { name: "Triggers", href: "/triggers", icon: Target },
   { name: "Scheduler", href: "/scheduler", icon: Calendar },
+  { name: "Analytics", href: "/analytics", icon: BarChart3 },
   { name: "Activity", href: "/activity", icon: Activity },
   { name: "Spaces", href: "/spaces", icon: Zap },
   { name: "Settings", href: "/settings", icon: Settings },

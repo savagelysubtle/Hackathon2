@@ -14,7 +14,7 @@ dotenv.config();
 
 /**
  * Test Warden Spaces Integration
- * 
+ *
  * This test verifies:
  * 1. WardenSpacesManager initialization
  * 2. Trigger save/load operations

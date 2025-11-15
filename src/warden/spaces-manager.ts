@@ -3,10 +3,10 @@ import type { Trigger } from '../agent/state.js';
 
 /**
  * Warden Spaces Manager
- * 
+ *
  * Manages on-chain state storage using Warden Protocol's Spaces feature.
  * Spaces provide persistent, decentralized storage for agent configuration and state.
- * 
+ *
  * Key Features:
  * - On-chain persistence (survives restarts)
  * - Multi-user support (each wallet can have its own space)
@@ -41,7 +41,7 @@ export interface ExecutionRecord {
 
 /**
  * WardenSpacesManager
- * 
+ *
  * This class manages all interactions with Warden Spaces for persistent state storage.
  * In production, this connects to the actual Warden blockchain.
  * For MVP/testing, it can use local storage or in-memory fallback.
@@ -55,7 +55,7 @@ export class WardenSpacesManager {
   constructor(agentkit: WardenAgentKit, options?: { useOnChain?: boolean }) {
     this.agentkit = agentkit;
     this.useOnChain = options?.useOnChain ?? false; // Default to local for now
-    
+
     // Initialize with empty state
     this.localCache = {
       triggers: {},
@@ -89,10 +89,10 @@ export class WardenSpacesManager {
         //   approveExpression: 'approve',
         // });
         // this.spaceId = space.id;
-        
+
         this.spaceId = `space-${Date.now()}-${owner.slice(0, 8)}`;
         console.log('✅ Created Warden Space:', this.spaceId);
-        
+
         // Initialize state on-chain
         await this.saveState();
       } catch (error) {
@@ -124,7 +124,7 @@ export class WardenSpacesManager {
         // TODO: Replace with actual Warden Agent Kit Space read
         // const state = await this.agentkit.getSpace(this.spaceId);
         // return state as SpaceState;
-        
+
         console.log('📖 Loading state from Warden Space:', this.spaceId);
         return this.localCache;
       } catch (error) {
@@ -150,7 +150,7 @@ export class WardenSpacesManager {
       try {
         // TODO: Replace with actual Warden Agent Kit Space write
         // await this.agentkit.updateSpace(this.spaceId, this.localCache);
-        
+
         console.log('💾 Saved state to Warden Space:', this.spaceId);
         console.log('   - Triggers:', Object.keys(this.localCache.triggers).length);
         console.log('   - Execution history:', this.localCache.executionHistory.length);
@@ -167,10 +167,10 @@ export class WardenSpacesManager {
    */
   async saveTrigger(trigger: Trigger): Promise<void> {
     console.log('💾 Saving trigger to Warden Space:', trigger.id);
-    
+
     this.localCache.triggers[trigger.id] = trigger;
     await this.saveState();
-    
+
     console.log('✅ Trigger saved on-chain:', {
       id: trigger.id,
       asset: trigger.asset,

@@ -5,14 +5,14 @@ import { WardenSpacesManager } from '../warden/spaces-manager.js';
 
 /**
  * Enhanced AI Tools for Recurring Executor Agent
- * 
+ *
  * These tools provide advanced analytics, market insights, and intelligent
  * recommendations to make the agent more useful and engaging.
  */
 
 /**
  * Portfolio Analysis Tool
- * 
+ *
  * Analyzes user's portfolio and provides comprehensive insights including:
  * - Total value and performance
  * - Risk assessment
@@ -35,7 +35,7 @@ export function createPortfolioAnalysisTool(
       try {
         // Get portfolio config from Warden Space
         const config = await spacesManager.getPortfolioConfig();
-        
+
         // Mock portfolio data - replace with real wallet balance queries
         const holdings = {
           ETH: 1.5,
@@ -107,7 +107,7 @@ export function createPortfolioAnalysisTool(
           const underweight = Object.entries(drifts)
             .filter(([, drift]) => drift < -config.driftThreshold)
             .map(([asset, drift]) => `${asset} (${drift.toFixed(1)}%)`);
-          
+
           rebalanceRec = `⚠️ Rebalancing recommended:\n`;
           if (overweight.length > 0) rebalanceRec += `  Overweight: ${overweight.join(', ')}\n`;
           if (underweight.length > 0) rebalanceRec += `  Underweight: ${underweight.join(', ')}`;
@@ -154,7 +154,7 @@ export function createPortfolioAnalysisTool(
 
 /**
  * Market Insights Tool
- * 
+ *
  * Provides real-time market analysis and sentiment for specific assets:
  * - Current price and 24h change
  * - Market sentiment (based on price action)
@@ -173,11 +173,11 @@ export function createMarketInsightsTool(priceFetcher: PriceFetcher) {
     func: async ({ asset }) => {
       try {
         const currentPrice = await priceFetcher.getPrice(`${asset}/USD`);
-        
+
         // Mock historical data - in production, fetch from oracle or external API
         const price24hAgo = currentPrice * (1 - (Math.random() * 0.1 - 0.03));
         const change24h = ((currentPrice - price24hAgo) / price24hAgo) * 100;
-        
+
         // Calculate technical indicators (simplified)
         const high24h = currentPrice * 1.05;
         const low24h = currentPrice * 0.95;
@@ -249,7 +249,7 @@ export function createMarketInsightsTool(priceFetcher: PriceFetcher) {
 
 /**
  * Trigger Recommendations Tool
- * 
+ *
  * Analyzes portfolio and market conditions to suggest optimal triggers:
  * - Based on historical volatility
  * - Support/resistance levels
@@ -271,7 +271,7 @@ export function createTriggerRecommendationsTool(
       try {
         // Get current triggers
         const existingTriggers = await spacesManager.loadTriggers();
-        
+
         // Mock portfolio holdings
         const holdings = {
           ETH: 1.5,
@@ -297,7 +297,7 @@ export function createTriggerRecommendationsTool(
         // 1. Take profit triggers for volatile assets
         for (const [asset, amount] of Object.entries(holdings)) {
           if (asset === 'USDC' || amount === 0) continue;
-          
+
           const hasExistingTrigger = existingTriggers.some(
             t => t.asset === asset && t.active
           );
@@ -360,8 +360,8 @@ export function createTriggerRecommendationsTool(
           insights: [
             `📊 You have ${existingTriggers.length} active triggers`,
             `💡 Found ${recommendations.length} potential trigger opportunities`,
-            recommendations.length > 0 
-              ? `⭐ Top priority: ${recommendations[0].action}` 
+            recommendations.length > 0
+              ? `⭐ Top priority: ${recommendations[0].action}`
               : '✅ Your trigger coverage looks good!',
           ],
           quickActions: recommendations.slice(0, 2).map(r => ({
@@ -382,7 +382,7 @@ export function createTriggerRecommendationsTool(
 
 /**
  * Execution History Tool
- * 
+ *
  * Retrieves and analyzes historical executions from Warden Space:
  * - Swap history
  * - Rebalance history
@@ -405,17 +405,17 @@ export function createExecutionHistoryTool(spacesManager: WardenSpacesManager) {
     func: async ({ limit = 20, type = 'all' }) => {
       try {
         const history = await spacesManager.getExecutionHistory(limit);
-        
+
         // Filter by type if specified
-        const filtered = type === 'all' 
-          ? history 
+        const filtered = type === 'all'
+          ? history
           : history.filter(record => record.type === type);
 
         // Calculate statistics
         const successCount = filtered.filter(r => r.status === 'success').length;
         const failureCount = filtered.filter(r => r.status === 'failure').length;
-        const successRate = filtered.length > 0 
-          ? ((successCount / filtered.length) * 100).toFixed(1) 
+        const successRate = filtered.length > 0
+          ? ((successCount / filtered.length) * 100).toFixed(1)
           : '0';
 
         // Group by type
@@ -445,8 +445,8 @@ export function createExecutionHistoryTool(spacesManager: WardenSpacesManager) {
             `📊 Total executions: ${filtered.length}`,
             `✅ Success rate: ${successRate}%`,
             `🔄 Swaps: ${byType.swap}, Rebalances: ${byType.rebalance}, Triggers: ${byType.trigger}`,
-            filtered.length > 0 
-              ? `🕐 Last execution: ${filtered[0].timestamp}` 
+            filtered.length > 0
+              ? `🕐 Last execution: ${filtered[0].timestamp}`
               : '📝 No executions yet',
           ],
           storedOnChain: spacesManager.isOnChain() ? '✅ Stored on Warden Chain' : '📝 Stored locally',
