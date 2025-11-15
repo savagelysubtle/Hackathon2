@@ -294,8 +294,16 @@ Most agents in the competition will be:
 #### **Early Onboarder Advantage**:
 - ✅ You're building NOW (before launch)
 - ✅ You'll be ready on Day 1
-- ✅ You have migration path ready
+- ✅ Deadline: Mid-December (plenty of time to polish!)
+- ✅ Can keep improving after submission
 - ✅ You can deploy in 15 minutes
+
+**Key Insight from Warden Team**:
+> "The more time you spend polishing your agent, the better the overall UX will be and people will want to pay for it."
+
+**Strategy**: Submit early, then **keep building** to maximize both:
+1. Early onboarder rewards ($10K)
+2. Future monetization potential (13M+ users)
 
 **Estimated Position**: **Top 5-10** potential! 🏆
 
@@ -350,15 +358,25 @@ Most agents in the competition will be:
 
 **Why**: Mandatory for qualification
 
-**How**:
-1. Fork [agent-kit-examples](https://github.com/warden-protocol/agent-kit-examples)
-2. Add your agent to community list
-3. Submit PR
-4. Include:
-   - Agent name: Recurring Executor Agent
-   - Description: AI-powered DeFi portfolio automation
-   - Link: https://github.com/savagelysubtle/Hackathon2
-   - Use case: DeFi automation, portfolio rebalancing
+**UPDATED PROCESS** (from Warden team):
+1. Go to [community-agents](https://github.com/warden-protocol/community-agents)
+2. Open PR to **main README.md** file
+3. Add your agent to the "Community Agents and Tools" section
+4. Link to **YOUR repo** (https://github.com/savagelysubtle/Hackathon2)
+5. Include:
+   ```markdown
+   ### 🤖 Recurring Executor Agent
+   **Description**: AI-powered DeFi portfolio automation with natural language control
+   **Tech Stack**: LangGraph + Warden Agent Kit + Next.js
+   **Use Case**: Autonomous portfolio rebalancing, price triggers, scheduled DeFi automation
+   **Repository**: https://github.com/savagelysubtle/Hackathon2
+   **Live Demo**: https://your-project.vercel.app
+   ```
+
+**Benefits**:
+- ✅ Keep working on your own repo (no PRs to them needed)
+- ✅ Keep committing improvements after submission
+- ✅ Full control over your codebase
 
 **Estimated Time**: 5 minutes
 
@@ -465,50 +483,89 @@ Most agents in the competition will be:
 
 ## 🎯 **Timeline to Submission**
 
+### **UPDATED: Official Program Details** 📅
+
+**From Warden Team** (ungl1tched):
+- ✅ **Deadline**: Mid-December (1st month early onboarder window)
+- ✅ **Keep Building**: You can keep making commits after submission
+- ✅ **Monetization**: Warden Studio launching soon for agent publishing
+- ✅ **Community PR**: Submit PR to main README.md linking to YOUR repo
+  - Link: https://github.com/warden-protocol/community-agents
+  - Keep working on your own repo, no need for PRs to them
+- ✅ **Only Rule**: Must use LangGraph (you're compliant! ✅)
+
 ### **This Week** (Must Do)
 ```
 Day 1 (Today):
 - [ ] Register agent (5 min)
-- [ ] Add to community repo (5 min)
 - [ ] Deploy to Vercel (15 min)
+- [ ] Open PR to community-agents README.md (5 min)
 - [ ] Test deployment (15 min)
 
 Total: ~40 minutes
 ```
 
-### **Next Week** (Nice to Have)
+### **Before Mid-December** (Polish & Improve)
 ```
 - [ ] Create demo video (1 hour)
-- [ ] Polish documentation (optional)
-- [ ] Add more tests (optional)
+- [ ] Polish dashboard UX (ongoing)
+- [ ] Add more tests (ongoing)
+- [ ] Keep committing improvements (encouraged!)
 ```
 
-### **Launch Week** (End of Month)
+### **Mid-December** (Deadline)
 ```
-- [ ] Submit to Warden Agent Hub (Day 1!)
-- [ ] Share on Twitter/Discord
-- [ ] Monitor for feedback
+- ✅ Top 10 Early Onboarders selected
+- 🎉 Rewards distributed
+```
+
+### **Post-Launch** (Warden Studio)
+```
+- [ ] Publish agent to Warden App
+- [ ] Set up monetization (USDC payments)
+- [ ] Reach 13M+ users
+- [ ] Ongoing participation rewards
 ```
 
 ---
 
 ## 🚀 **Recommendations**
 
-### **Immediate Actions** (This Week)
+### **Immediate Actions** (Today)
 
 1. **Register NOW** ⏱️ 5 min
-   - Spots are first-come, first-served
-   - Don't wait until launch day
+   - Deadline: Mid-December (first month)
+   - Early submission = better positioning
 
 2. **Deploy to Vercel** ⏱️ 15 min
    - FREE tier works perfectly
    - Get your public URL
 
-3. **Add to Community Repo** ⏱️ 5 min
-   - Required for qualification
-   - Shows community participation
+3. **Open PR to Community README** ⏱️ 5 min
+   - Link to YOUR repo (not fork!)
+   - Keep building on your own repo after
+   - https://github.com/warden-protocol/community-agents
 
-**Total Time**: ~25 minutes to complete all critical items!
+4. **Test Deployment** ⏱️ 15 min
+   - Verify dashboard loads
+   - Test wallet connection
+   - Confirm agent chat works
+
+**Total Time**: ~40 minutes to complete all critical items!
+
+### **Next Month** (Before Mid-Dec)
+
+**Keep Building!** (Encouraged by Warden team)
+- ✅ Polish dashboard UX
+- ✅ Add more features
+- ✅ Improve documentation
+- ✅ Create demo video
+- ✅ Keep committing to your repo
+
+**Why This Matters**:
+- Warden Studio launching soon
+- Better UX = more users willing to pay
+- You'll be ready to monetize on Day 1
 
 ### **Strategic Advantages**
 
@@ -619,20 +676,28 @@ Total: ~40 minutes
 
 ## 📞 **Next Steps**
 
-### **Today: Critical** ⏱️ 25 minutes
+### **Today: Critical** ⏱️ 40 minutes
 1. ✅ Register agent (5 min)
 2. ✅ Deploy to Vercel (15 min)
-3. ✅ Add to community repo (5 min)
+3. ✅ Open PR to community-agents README (5 min)
+4. ✅ Test deployment (15 min)
 
-### **This Week: Polish**
+### **Next Few Weeks: Polish** (Before Mid-Dec)
 1. 🎥 Create demo video (1 hour)
 2. 📝 Update README with deployment URL
-3. 🧪 Final testing round
+3. 🧪 Add more tests
+4. ✨ Keep improving dashboard UX
+5. 📈 Keep committing (encouraged by Warden team!)
 
-### **Launch Week: Submit**
-1. 🚀 Submit to Warden Agent Hub (Day 1!)
-2. 📱 Share on social media
-3. 💬 Engage with community
+### **Mid-December: Deadline**
+1. ✅ Top 10 Early Onboarders announced
+2. 💰 Rewards distributed
+
+### **Post-Launch: Monetization**
+1. 🚀 Publish to Warden Studio
+2. 💵 Set up USDC payment for users
+3. 📱 Reach 13M+ Warden App users
+4. 🔄 Ongoing participation rewards
 
 ---
 
