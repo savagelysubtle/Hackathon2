@@ -20,15 +20,7 @@
     "composite": true,
     "declaration": true,
     "declarationMap": true,
-    "baseUrl": ".",
-    "paths": {
-      "@warden-community-agents/*": ["packages/*/src"]
-    }
+    "baseUrl": "."
   },
-  "include": [],
-  "references": [
-    { "path": "./packages/coingecko-agent" },
-    { "path": "./packages/portfolio-agent" },
-    { "path": "./packages/common" }
-  ]
+  "include": ["src/**/*", "tests/**/*"]
 }

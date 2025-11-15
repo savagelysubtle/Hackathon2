@@ -26,16 +26,18 @@
     "test:swap": "bun run src/tests/test-swap.ts",
     "test:oracle": "bun run src/tests/test-oracle.ts",
     "test:trigger": "bun run src/tests/test-price-trigger.ts",
+    "test:langgraph": "bun run src/tests/test-langgraph-agent.ts",
     "start": "bun run src/agent/recurring-executor.ts"
   },
   "dependencies": {
-    "@langchain/core": "^1.0.1",
-    "@langchain/langgraph": "^1.0.0",
-    "@langchain/openai": "^1.0.0",
+    "@langchain/core": "^0.3.0",
+    "@langchain/langgraph": "^0.2.0",
+    "@langchain/openai": "^0.3.0",
     "@wardenprotocol/warden-agent-kit-core": "^0.0.32",
     "@wardenprotocol/warden-langchain": "^0.0.17",
     "ethers": "^6.15.0",
-    "node-cron": "^4.2.1"
+    "node-cron": "^4.2.1",
+    "zod": "^3.22.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",

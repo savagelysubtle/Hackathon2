@@ -265,29 +265,33 @@ The dashboard provides a **production-ready web interface** for managing your De
 - 🚀 **[GETTING_STARTED.md](./GETTING_STARTED.md)** - Complete setup guide (5 minutes)
 - 🏗️ **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - System design & technical details
 - 📚 **[DOCUMENTATION_INDEX.md](./DOCUMENTATION_INDEX.md)** - Navigate all docs
-- 💯 **[PROJECT_COMPLETE.md](./PROJECT_COMPLETE.md)** - Final summary & submission guide
+- 💯 **[docs/implementation/PROJECT_COMPLETE.md](./docs/implementation/PROJECT_COMPLETE.md)** - Final summary & submission guide
 
 ### **🎨 Dashboard Documentation**
-- 🚀 **[DASHBOARD_IMPLEMENTATION.md](./DASHBOARD_IMPLEMENTATION.md)** - ✅ **COMPLETE implementation summary!**
-- 📊 **[DASHBOARD_REVIEW.md](./DASHBOARD_REVIEW.md)** - Assessment (now 110/100 with features!)
+- 🚀 **[docs/dashboard/DASHBOARD_IMPLEMENTATION.md](./docs/dashboard/DASHBOARD_IMPLEMENTATION.md)** - ✅ **COMPLETE implementation summary!**
+- 📊 **[docs/dashboard/DASHBOARD_REVIEW.md](./docs/dashboard/DASHBOARD_REVIEW.md)** - Assessment (now 110/100 with features!)
 - ✅ **[docs/dashboard/WALLET_CONNECTION_PROMPT.md](./docs/dashboard/WALLET_CONNECTION_PROMPT.md)** - ✅ **IMPLEMENTED!**
 - ✅ **[docs/dashboard/DASHBOARD_INTERACTIVE_PROMPT.md](./docs/dashboard/DASHBOARD_INTERACTIVE_PROMPT.md)** - ✅ **IMPLEMENTED!**
 - 🎨 **[docs/dashboard/DASHBOARD_PROMPT.md](./docs/dashboard/DASHBOARD_PROMPT.md)** - Original build prompt
-- 💰 **[USER_ONBOARDING.md](./USER_ONBOARDING.md)** - Data sources & wallet integration
+- 💰 **[docs/submission/USER_ONBOARDING.md](./docs/submission/USER_ONBOARDING.md)** - Data sources & wallet integration
 
 ### **🏆 Submission & Rewards Opportunities**
 
 #### **ETHGlobal Agentic Ethereum Hackathon**
-- 🎯 **[HACKATHON_SUBMISSION_GUIDE.md](./HACKATHON_SUBMISSION_GUIDE.md)** - Complete submission guide
-- ⚡ **[QUICK_SUBMISSION_CHECKLIST.md](./QUICK_SUBMISSION_CHECKLIST.md)** - Action checklist & timeline
+- 🎯 **[docs/submission/HACKATHON_SUBMISSION_GUIDE.md](./docs/submission/HACKATHON_SUBMISSION_GUIDE.md)** - Complete submission guide
+- ⚡ **[docs/submission/QUICK_SUBMISSION_CHECKLIST.md](./docs/submission/QUICK_SUBMISSION_CHECKLIST.md)** - Action checklist & timeline
 - 💰 **Prize**: $20,000 (1st place, Warden track)
 - 📅 **Deadline**: February 14, 2025, 11:59 PM
 - 🔗 **Submit**: https://ethglobal.com/events/agents
 
 #### **Warden Protocol Builder Incentive Program** 🆕
-- 🚀 **[WARDEN_BUILDER_INCENTIVE_GUIDE.md](./WARDEN_BUILDER_INCENTIVE_GUIDE.md)** - ✅ **Complete program guide!**
+- 🚀 **[docs/submission/WARDEN_BUILDER_INCENTIVE_GUIDE.md](./docs/submission/WARDEN_BUILDER_INCENTIVE_GUIDE.md)** - ✅ **Complete program guide!**
+- 🆓 **[docs/submission/VERCEL_DEPLOYMENT_GUIDE.md](./docs/submission/VERCEL_DEPLOYMENT_GUIDE.md)** - ✅ **Deploy for FREE (Recommended)!**
+- 📦 **[docs/submission/LANGSMITH_DEPLOYMENT_GUIDE.md](./docs/submission/LANGSMITH_DEPLOYMENT_GUIDE.md)** - ✅ **Deploy to LangSmith Cloud!**
+- 🔄 **[docs/langgraph/LANGGRAPH_MIGRATION_PROMPT.md](./docs/langgraph/LANGGRAPH_MIGRATION_PROMPT.md)** - ✅ **Convert to LangGraph!**
 - 💰 **Rewards**: $10,000 (top 10 agents) + quality bonuses + ongoing rewards
 - 📅 **Launch**: End of this month (Agent Hub)
+- 🔗 **Register**: https://wardenprotocol.notion.site/agent-builder-incentive-programme-terms-and-conditions
 - 🔗 **Details**: https://wardenprotocol.org/blog/agent-builder-incentive-programme
 - 🎯 **Total Potential**: $30K+ from BOTH programs!
 
@@ -460,6 +464,6 @@ Special thanks to:
 
 **Built with ❤️ for Agentic Ethereum Hackathon 2026**
 
-[Documentation](./PROJECT_COMPLETE.md) • [Setup Guide](./GETTING_STARTED.md) • [Roadmap](./MVP_PLAN.md)
+[Documentation](./docs/implementation/PROJECT_COMPLETE.md) • [Setup Guide](./GETTING_STARTED.md) • [Roadmap](./MVP_PLAN.md)
 
 </div>

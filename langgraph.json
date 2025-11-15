@@ -1,9 +1,144 @@
 {
-  "node_version": "20",
-  "graphs": {
-    "agent": "./src/agent/graph.ts:graph"
-  },
-  "env": ".env",
   "dependencies": ["."],
-  "image_distro": "wolfi"
+  "graphs": {
+    "recurring_executor": {
+      "path": "./src/agent/graph.ts",
+      "description": "Recurring Executor Agent - AI-powered DeFi portfolio automation with scheduled rebalancing, price-based triggers, and natural language control. Built for Warden Protocol Agent Hub.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "enum": ["human", "ai", "system"]
+                },
+                "content": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Conversation messages"
+          },
+          "walletAddress": {
+            "type": "string",
+            "description": "User's wallet address for portfolio operations"
+          },
+          "portfolio": {
+            "type": "object",
+            "properties": {
+              "tokens": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "symbol": {
+                      "type": "string"
+                    },
+                    "amount": {
+                      "type": "number"
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  }
+                }
+              },
+              "totalValue": {
+                "type": "number"
+              },
+              "allocation": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "targetAllocation": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "drift": {
+                "type": "number"
+              }
+            },
+            "description": "Current portfolio state"
+          },
+          "triggers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "asset": {
+                  "type": "string"
+                },
+                "condition": {
+                  "type": "string",
+                  "enum": ["pump", "dump"]
+                },
+                "threshold": {
+                  "type": "number"
+                },
+                "action": {
+                  "type": "string"
+                },
+                "active": {
+                  "type": "boolean"
+                },
+                "progress": {
+                  "type": "number"
+                }
+              }
+            },
+            "description": "Active price-based triggers"
+          }
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "messages": {
+            "type": "array",
+            "description": "Updated conversation messages including agent responses"
+          },
+          "portfolio": {
+            "type": "object",
+            "description": "Updated portfolio state after operations"
+          },
+          "triggers": {
+            "type": "array",
+            "description": "Updated trigger states"
+          },
+          "lastRebalance": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of last rebalancing operation"
+          },
+          "lastTriggerCheck": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of last trigger check"
+          },
+          "needsRebalancing": {
+            "type": "boolean",
+            "description": "Whether portfolio needs rebalancing"
+          }
+        }
+      }
+    }
+  },
+  "env": {
+    "OPENAI_API_KEY": "",
+    "PRIVATE_KEY": "",
+    "WARDEN_RPC_URL": "",
+    "WARDEN_CHAIN_ID": "",
+    "LANGSMITH_API_KEY": ""
+  }
 }

@@ -1,297 +1,251 @@
 import { WardenAgentKit } from '@wardenprotocol/warden-agent-kit-core';
-import { CronScheduler } from '../scheduler/cron-scheduler.js';
-import { PriceFetcher } from '../oracle/price-fetcher.js';
-import { SwapExecutor } from '../executor/swap-executor.js';
-import { PortfolioRebalancer } from '../strategies/rebalancer.js';
-import { PriceTrigger } from '../triggers/price-trigger.js';
 import * as dotenv from 'dotenv';
+import { graph, invokeAgent } from '../agent/graph.js';
+import { LangGraphScheduler } from '../scheduler/langgraph-scheduler.js';
 
 dotenv.config();
 
 /**
- * RecurringExecutorAgent
+ * RecurringExecutorAgent (LangGraph Version)
  *
  * Main agent that integrates:
+ * - LangGraph stateful workflow
  * - Scheduled rebalancing (cron)
  * - Price triggers (conditional execution)
  * - Oracle price monitoring
  * - DEX swap execution
  */
 export class RecurringExecutorAgent {
-    private scheduler: CronScheduler;
-    private oracle: PriceFetcher;
-    private executor: SwapExecutor;
-    private rebalancer?: PortfolioRebalancer;
-    private triggers: PriceTrigger[] = [];
+  private scheduler: LangGraphScheduler;
+  private walletAddress: string;
 
-    constructor(private agentkit: WardenAgentKit) {
-        this.scheduler = new CronScheduler();
-        this.oracle = new PriceFetcher(agentkit);
-        this.executor = new SwapExecutor(agentkit);
+  constructor(
+    private agentkit: WardenAgentKit,
+    walletAddress?: string,
+  ) {
+    this.walletAddress = walletAddress || agentkit.getAddress();
+    this.scheduler = new LangGraphScheduler();
+  }
+
+  /**
+   * Initialize agent with scheduled jobs
+   */
+  async initialize() {
+    console.log('🤖 Initializing Recurring Executor Agent (LangGraph)...\n');
+    console.log('═══════════════════════════════════════════════════\n');
+
+    // Setup scheduled jobs
+    this.setupScheduledJobs();
+
+    console.log('✅ Agent initialized with LangGraph!\n');
+    console.log('═══════════════════════════════════════════════════');
+  }
+
+  /**
+   * Setup scheduled jobs with LangGraph
+   */
+  private setupScheduledJobs(): void {
+    console.log('📅 Setting up LangGraph Scheduled Jobs...\n');
+
+    // Job 1: Weekly portfolio rebalance (Sunday at 10:00 AM)
+    this.scheduler.scheduleRebalancing('0 10 * * 0', this.walletAddress);
+
+    // Job 2: Check price triggers every 5 minutes
+    this.scheduler.scheduleTriggerChecks('*/5 * * * *', this.walletAddress);
+
+    // Job 3: Update portfolio every hour
+    this.scheduler.schedulePortfolioUpdate('0 * * * *', this.walletAddress);
+
+    // Job 4: Daily health check (every day at midnight)
+    this.scheduler.scheduleHealthCheck('0 0 * * *');
+
+    console.log('   ✅ 4 scheduled jobs configured\n');
+  }
+
+  /**
+   * Chat with the agent
+   */
+  async chat(message: string): Promise<string> {
+    try {
+      const result = await invokeAgent(
+        message,
+        this.walletAddress,
+        this.walletAddress,
+      );
+
+      const lastMessage = result.messages[result.messages.length - 1];
+      return lastMessage.content as string;
+    } catch (error) {
+      console.error('Chat error:', (error as Error).message);
+      return `Error: ${(error as Error).message}`;
     }
+  }
 
-    /**
-     * Initialize agent with scheduled jobs and triggers
-     */
-    async initialize() {
-        console.log('🤖 Initializing Recurring Executor Agent...\n');
-        console.log('═══════════════════════════════════════════════════\n');
+  /**
+   * Create a price trigger
+   */
+  async createTrigger(
+    asset: string,
+    condition: 'pump' | 'dump',
+    threshold: number,
+    action: string,
+  ): Promise<void> {
+    const message = `Create a trigger: ${action} when ${asset} ${condition}s ${threshold}%`;
+    const response = await this.chat(message);
+    console.log(response);
+  }
 
-        // Setup portfolio rebalancer
-        this.setupRebalancer();
+  /**
+   * Check portfolio status
+   */
+  async checkPortfolio(): Promise<void> {
+    const message =
+      'Show me my current portfolio status including all balances and allocations';
+    const response = await this.chat(message);
+    console.log(response);
+  }
 
-        // Setup price triggers
-        this.setupTriggers();
+  /**
+   * Check trigger status
+   */
+  async checkTriggers(): Promise<void> {
+    const message = 'Check all active triggers and show their current status';
+    const response = await this.chat(message);
+    console.log(response);
+  }
 
-        // Setup scheduled jobs
-        this.setupScheduledJobs();
+  /**
+   * Start the agent
+   */
+  start(): void {
+    console.log('\n🚀 Starting Recurring Executor Agent (LangGraph)...\n');
+    console.log('═══════════════════════════════════════════════════\n');
 
-        console.log('✅ Agent initialized!\n');
-        console.log('═══════════════════════════════════════════════════');
-    }
+    // List all jobs
+    this.scheduler.listJobs();
 
-    /**
-     * Setup portfolio rebalancer
-     */
-    private setupRebalancer(): void {
-        console.log('⚖️  Setting up Portfolio Rebalancer...');
+    // Start scheduler
+    this.scheduler.startAll();
 
-        this.rebalancer = new PortfolioRebalancer(
-            this.agentkit,
-            this.oracle,
-            this.executor,
-            {
-                targets: [
-                    { asset: 'ETH', targetPercent: 60 },
-                    { asset: 'USDC', targetPercent: 40 },
-                ],
-                driftThreshold: 5,  // Rebalance if drift > 5%
-                chain: 'ethereum',
-            }
-        );
+    console.log('✅ Agent is running!');
+    console.log('   Using LangGraph stateful workflows');
+    console.log('   Press Ctrl+C to stop.\n');
+    console.log('═══════════════════════════════════════════════════\n');
+  }
 
-        console.log('   ✅ Rebalancer configured: 60% ETH / 40% USDC\n');
-    }
+  /**
+   * Stop the agent
+   */
+  stop(): void {
+    console.log('\n🛑 Stopping agent...');
+    this.scheduler.stopAll();
+    console.log('✅ Agent stopped.\n');
+  }
 
-    /**
-     * Setup price triggers
-     */
-    private setupTriggers(): void {
-        console.log('🎯 Setting up Price Triggers...');
+  /**
+   * Get agent status
+   */
+  getStatus() {
+    return {
+      scheduler: this.scheduler.getStatistics(),
+      walletAddress: this.walletAddress,
+      graphName: graph.name,
+    };
+  }
 
-        // Trigger 1: Sell 10% SOL if it pumps 15%
-        const solTrigger = new PriceTrigger(
-            this.oracle,
-            this.executor,
-            {
-                asset: 'SOL',
-                baselinePrice: 200,
-                triggerPercent: 15,
-                actionPercent: 10,
-                chain: 'ethereum',
-            }
-        );
-        this.triggers.push(solTrigger);
-        console.log('   ✅ SOL pump trigger: Sell 10% at +15%');
+  /**
+   * Get the LangGraph instance
+   */
+  getGraph() {
+    return graph;
+  }
 
-        // Trigger 2: Sell 5% ETH if it pumps 20%
-        const ethTrigger = new PriceTrigger(
-            this.oracle,
-            this.executor,
-            {
-                asset: 'ETH',
-                baselinePrice: 3000,
-                triggerPercent: 20,
-                actionPercent: 5,
-                chain: 'ethereum',
-            }
-        );
-        this.triggers.push(ethTrigger);
-        console.log('   ✅ ETH pump trigger: Sell 5% at +20%\n');
-    }
-
-    /**
-     * Setup scheduled jobs
-     */
-    private setupScheduledJobs(): void {
-        console.log('📅 Setting up Scheduled Jobs...\n');
-
-        // Job 1: Weekly portfolio rebalance (Sunday at 10:00 AM)
-        this.scheduler.scheduleJob({
-            id: 'weekly-rebalance',
-            schedule: '0 10 * * 0',  // Every Sunday at 10:00 AM
-            description: 'Weekly Portfolio Rebalance (60/40 ETH/USDC)',
-            action: async () => {
-                if (this.rebalancer) {
-                    await this.rebalancer.rebalance();
-                }
-            },
-        });
-
-        // Job 2: Check price triggers every 5 minutes
-        this.scheduler.scheduleJob({
-            id: 'price-trigger-check',
-            schedule: '*/5 * * * *',  // Every 5 minutes
-            description: 'Check Price-Based Triggers',
-            action: async () => {
-                console.log('\n🔍 Checking price triggers...');
-                for (const trigger of this.triggers) {
-                    await trigger.checkAndExecute();
-                }
-            },
-        });
-
-        // Job 3: Daily health check (every day at midnight)
-        this.scheduler.scheduleJob({
-            id: 'daily-health-check',
-            schedule: '0 0 * * *',  // Every day at midnight
-            description: 'Daily Agent Health Check',
-            action: async () => {
-                await this.healthCheck();
-            },
-        });
-
-        console.log('   ✅ 3 scheduled jobs configured\n');
-    }
-
-    /**
-     * Health check: Verify agent is functioning correctly
-     */
-    private async healthCheck(): Promise<void> {
-        console.log('\n🏥 Running Health Check...');
-        console.log('─────────────────────────────────────────────────');
-
-        try {
-            // Check 1: Agent address
-            const address = this.agentkit.getAddress();
-            console.log(`   ✅ Agent address: ${address}`);
-
-            // Check 2: Balance check
-            const ethBalance = await this.agentkit.getBalance('ETH');
-            console.log(`   ✅ ETH balance: ${ethBalance}`);
-
-            // Check 3: Oracle connectivity
-            const solPrice = await this.oracle.getPrice('SOL/USD');
-            console.log(`   ✅ Oracle working: SOL = $${solPrice}`);
-
-            // Check 4: Scheduler status
-            const stats = this.scheduler.getStatistics();
-            console.log(`   ✅ Scheduler: ${stats.enabledJobs} jobs running`);
-
-            // Check 5: Trigger status
-            const activeTriggers = this.triggers.filter(t => !t.isTriggered()).length;
-            console.log(`   ✅ Triggers: ${activeTriggers}/${this.triggers.length} active`);
-
-            console.log('\n✅ All health checks passed!');
-            console.log('─────────────────────────────────────────────────\n');
-
-        } catch (error) {
-            console.error('\n❌ Health check failed:', (error as Error).message);
-            console.error('─────────────────────────────────────────────────\n');
-        }
-    }
-
-    /**
-     * Start the agent
-     */
-    start(): void {
-        console.log('\n🚀 Starting Recurring Executor Agent...\n');
-        console.log('═══════════════════════════════════════════════════\n');
-
-        // List all jobs
-        this.scheduler.listJobs();
-
-        // Start scheduler
-        this.scheduler.startAll();
-
-        console.log('✅ Agent is running!');
-        console.log('   Press Ctrl+C to stop.\n');
-        console.log('═══════════════════════════════════════════════════\n');
-    }
-
-    /**
-     * Stop the agent
-     */
-    stop(): void {
-        console.log('\n🛑 Stopping agent...');
-        this.scheduler.stopAll();
-        console.log('✅ Agent stopped.\n');
-    }
-
-    /**
-     * Get agent status
-     */
-    getStatus() {
-        return {
-            scheduler: this.scheduler.getStatistics(),
-            rebalancer: this.rebalancer?.getStatus(),
-            triggers: this.triggers.map(t => t.getStatus()),
-        };
-    }
+  /**
+   * Get the scheduler instance
+   */
+  getScheduler() {
+    return this.scheduler;
+  }
 }
 
 /**
  * Main entry point
  */
 async function main() {
+  console.log('\n');
+  console.log('╔═══════════════════════════════════════════════════╗');
+  console.log('║                                                   ║');
+  console.log('║       🤖 RECURRING EXECUTOR AGENT 🤖              ║');
+  console.log('║            (LangGraph Edition)                    ║');
+  console.log('║                                                   ║');
+  console.log('║   Agentic Ethereum Hackathon 2026                ║');
+  console.log('║   Built with Warden Protocol & LangGraph         ║');
+  console.log('║                                                   ║');
+  console.log('╚═══════════════════════════════════════════════════╝');
+  console.log('\n');
+
+  // Check environment
+  if (!process.env.PRIVATE_KEY) {
+    console.error('❌ Error: PRIVATE_KEY not found in .env file');
+    console.log('Run: bun run generate-wallet\n');
+    process.exit(1);
+  }
+
+  if (!process.env.OPENAI_API_KEY) {
+    console.error('❌ Error: OPENAI_API_KEY not found in .env file');
+    console.log('Add your OpenAI API key to .env file\n');
+    process.exit(1);
+  }
+
+  try {
+    // Initialize Warden Agent Kit
+    console.log('🔌 Connecting to Warden Protocol...');
+    const agentkit = new WardenAgentKit({
+      privateKeyOrAccount: process.env.PRIVATE_KEY as `0x${string}`,
+    });
+    console.log('✅ Connected!\n');
+
+    // Get wallet address
+    const walletAddress = agentkit.getAddress();
+    console.log(`👛 Wallet: ${walletAddress}\n`);
+
+    // Create and initialize agent
+    const agent = new RecurringExecutorAgent(agentkit, walletAddress);
+    await agent.initialize();
+
+    // Show example triggers
+    console.log('\n💡 Example Commands:\n');
+    console.log("   agent.chat('Show me my portfolio')");
+    console.log("   agent.createTrigger('SOL', 'pump', 20, 'Sell 10% SOL')");
+    console.log('   agent.checkTriggers()');
+    console.log('   agent.checkPortfolio()');
     console.log('\n');
-    console.log('╔═══════════════════════════════════════════════════╗');
-    console.log('║                                                   ║');
-    console.log('║       🤖 RECURRING EXECUTOR AGENT 🤖              ║');
-    console.log('║                                                   ║');
-    console.log('║   Agentic Ethereum Hackathon 2026                ║');
-    console.log('║   Built with Warden Protocol                     ║');
-    console.log('║                                                   ║');
-    console.log('╚═══════════════════════════════════════════════════╝');
-    console.log('\n');
 
-    // Check environment
-    if (!process.env.PRIVATE_KEY) {
-        console.error('❌ Error: PRIVATE_KEY not found in .env file');
-        console.log('Run: bun run generate-wallet\n');
-        process.exit(1);
-    }
+    // Start agent
+    agent.start();
 
-    try {
-        // Initialize Warden Agent Kit
-        console.log('🔌 Connecting to Warden Protocol...');
-        const agentkit = new WardenAgentKit({
-            privateKeyOrAccount: process.env.PRIVATE_KEY as `0x${string}`,
-        });
-        console.log('✅ Connected!\n');
+    // Graceful shutdown
+    process.on('SIGINT', () => {
+      agent.stop();
+      process.exit(0);
+    });
 
-        // Create and initialize agent
-        const agent = new RecurringExecutorAgent(agentkit);
-        await agent.initialize();
-
-        // Start agent
-        agent.start();
-
-        // Graceful shutdown
-        process.on('SIGINT', () => {
-            agent.stop();
-            process.exit(0);
-        });
-
-        // Keep process alive
-        process.stdin.resume();
-
-    } catch (error) {
-        console.error('\n❌ Failed to start agent:', (error as Error).message);
-        console.log('\n🔍 Troubleshooting:');
-        console.log('   - Check .env configuration');
-        console.log('   - Verify Warden testnet is operational');
-        console.log('   - Check network connectivity\n');
-        process.exit(1);
-    }
+    // Keep process alive
+    process.stdin.resume();
+  } catch (error) {
+    console.error('\n❌ Failed to start agent:', (error as Error).message);
+    console.log('\n🔍 Troubleshooting:');
+    console.log('   - Check .env configuration');
+    console.log('   - Verify OPENAI_API_KEY is set');
+    console.log('   - Verify Warden testnet is operational');
+    console.log('   - Check network connectivity\n');
+    process.exit(1);
+  }
 }
 
 // Run if executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-    main().catch(console.error);
+  main().catch(console.error);
 }
 
 export { RecurringExecutorAgent };
-
-
-

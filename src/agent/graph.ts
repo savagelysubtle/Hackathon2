@@ -1,15 +1,20 @@
-import { HumanMessage } from '@langchain/core/messages';
+import { AIMessage, HumanMessage } from '@langchain/core/messages';
 import { RunnableConfig } from '@langchain/core/runnables';
-import { MemorySaver, StateGraph } from '@langchain/langgraph';
-import { createReactAgent } from '@langchain/langgraph/prebuilt';
+import { END, MemorySaver, StateGraph } from '@langchain/langgraph';
+import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { ChatOpenAI } from '@langchain/openai';
 import { WardenAgentKit } from '@wardenprotocol/warden-agent-kit-core';
-import { WardenToolkit } from '@wardenprotocol/warden-langchain';
 import * as dotenv from 'dotenv';
-import { StateAnnotation } from './state.js';
+import { SwapExecutor } from '../executor/swap-executor.js';
+import { PriceFetcher } from '../oracle/price-fetcher.js';
+import { PortfolioRebalancer } from '../strategies/rebalancer.js';
+import { Portfolio, StateAnnotation, Trigger } from './state.js';
+import { createWardenTools } from './tools.js';
 
 // Load environment variables
 dotenv.config();
+
+// ==================== INITIALIZATION ====================
 
 // Initialize Warden Agent Kit
 const wardenConfig = {
@@ -17,102 +22,430 @@ const wardenConfig = {
 };
 
 const agentkit = new WardenAgentKit(wardenConfig);
-const wardenToolkit = new WardenToolkit(agentkit);
-const tools = wardenToolkit.getTools();
+
+// Initialize supporting services
+const priceFetcher = new PriceFetcher(agentkit);
+const swapExecutor = new SwapExecutor(agentkit);
+
+// Initialize rebalancer (optional, can be configured)
+let rebalancer: PortfolioRebalancer | undefined;
+try {
+  rebalancer = new PortfolioRebalancer(agentkit, priceFetcher, swapExecutor, {
+    targets: [
+      { asset: 'ETH', targetPercent: 60 },
+      { asset: 'USDC', targetPercent: 40 },
+    ],
+    driftThreshold: 5,
+    chain: 'ethereum',
+  });
+} catch (error) {
+  console.warn('Rebalancer not configured:', (error as Error).message);
+}
+
+// Create tools
+const tools = createWardenTools(
+  agentkit,
+  priceFetcher,
+  swapExecutor,
+  rebalancer,
+);
 
 // Initialize LLM
 const llm = new ChatOpenAI({
   modelName: 'gpt-4o-mini',
   temperature: 0.7,
   apiKey: process.env.OPENAI_API_KEY,
-});
+}).bindTools(tools);
 
 // Store conversation history
 const memory = new MemorySaver();
 
+// ==================== NODE FUNCTIONS ====================
+
 /**
- * Define a node, these do the work of the graph and should have most of the logic.
- * Must return a subset of the properties set in StateAnnotation.
- * @param state The current state of the graph.
- * @param config Extra parameters passed into the state graph.
- * @returns Some subset of parameters of the graph state, used to update the state
- * for the edges and nodes executed next.
+ * Agent Node
+ * Main reasoning and decision-making node
  */
-const callModel = async (
+async function agentNode(
   state: typeof StateAnnotation.State,
   _config: RunnableConfig,
-): Promise<typeof StateAnnotation.Update> => {
-  // Create a React agent with Warden tools
-  const agent = createReactAgent({
-    llm,
-    tools,
-    checkpointSaver: memory,
-    messageModifier:
-      "You're a helpful Web3 assistant with access to blockchain operations. " +
-      'You can help users with DeFi tasks like checking balances, swapping tokens, ' +
-      'and managing their crypto assets. Always be clear about which blockchain operations ' +
-      "you're performing and confirm actions before executing them.",
-  });
+): Promise<typeof StateAnnotation.Update> {
+  const systemMessage = `You're a helpful Web3 DeFi assistant with access to blockchain operations.
 
-  const agentConfig = {
-    configurable: { thread_id: 'warden-hackathon-agent' },
+You can help users with:
+- Portfolio management and viewing balances
+- Creating price-based triggers (e.g., "Sell 10% SOL if it pumps 20%")
+- Executing token swaps
+- Checking if rebalancing is needed
+- Getting asset prices from Warden oracle
+
+You have access to the following tools:
+- get_portfolio: View current portfolio
+- create_trigger: Set up price-based triggers
+- check_triggers: Monitor active triggers
+- execute_swap: Swap tokens on DEX
+- check_rebalancing: Check if portfolio needs rebalancing
+- rebalance_portfolio: Execute rebalancing
+- get_price: Get current asset price
+- get_multiple_prices: Get multiple asset prices
+
+Always be clear about which blockchain operations you're performing and confirm high-value actions before executing them.
+
+Current State:
+${state.portfolio ? `- Portfolio: $${state.portfolio.totalValue.toFixed(2)} total value, ${state.portfolio.drift.toFixed(1)}% drift` : '- Portfolio: Not loaded'}
+${state.triggers ? `- Active Triggers: ${state.triggers.filter((t) => t.active).length}/${state.triggers.length}` : '- Triggers: None'}
+${state.lastRebalance ? `- Last Rebalance: ${state.lastRebalance.toISOString()}` : '- Last Rebalance: Never'}`;
+
+  const messages = [new HumanMessage(systemMessage), ...state.messages];
+
+  const response = await llm.invoke(messages);
+
+  return {
+    messages: [response],
   };
+}
 
-  // Stream the agent's response
-  const stream = await agent.stream(
-    { messages: [new HumanMessage(state.messages[0].content)] },
-    agentConfig,
-  );
+/**
+ * Tools Node
+ * Executes tool calls made by the agent
+ */
+const toolsNode = new ToolNode(tools);
 
-  let finalResponse = '';
-  for await (const chunk of stream) {
-    if ('agent' in chunk) {
-      finalResponse = chunk.agent.messages[0].content;
-      console.log('Agent response:', finalResponse);
-    } else if ('tools' in chunk) {
-      console.log('Tool response:', chunk.tools.messages[0].content);
+/**
+ * Check Triggers Node
+ * Monitors price-based triggers and updates their status
+ */
+async function checkTriggersNode(
+  state: typeof StateAnnotation.State,
+): Promise<typeof StateAnnotation.Update> {
+  const triggers = state.triggers || [];
+  const activeTriggers = triggers.filter((t) => t.active);
+
+  if (activeTriggers.length === 0) {
+    return {
+      lastTriggerCheck: new Date(),
+    };
+  }
+
+  const updatedTriggers: Trigger[] = [];
+
+  for (const trigger of triggers) {
+    if (!trigger.active) {
+      updatedTriggers.push(trigger);
+      continue;
+    }
+
+    try {
+      const currentPrice = await priceFetcher.getPrice(`${trigger.asset}/USD`);
+      const baselinePrice = trigger.baselinePrice || currentPrice;
+
+      const change = priceFetcher.calculateChange(currentPrice, baselinePrice);
+      const progress = (Math.abs(change) / Math.abs(trigger.threshold)) * 100;
+
+      const triggered =
+        (trigger.condition === 'pump' && change >= trigger.threshold) ||
+        (trigger.condition === 'dump' && change <= trigger.threshold);
+
+      updatedTriggers.push({
+        ...trigger,
+        currentPrice,
+        progress: Math.min(progress, 100),
+        active: !triggered, // Deactivate if triggered
+      });
+
+      if (triggered) {
+        console.log(`🚀 TRIGGER FIRED: ${trigger.action}`);
+      }
+    } catch (error) {
+      console.error(
+        `Error checking trigger ${trigger.id}:`,
+        (error as Error).message,
+      );
+      updatedTriggers.push(trigger);
     }
   }
 
   return {
-    messages: [
-      {
-        role: 'assistant',
-        content: finalResponse,
-      },
-    ],
+    triggers: updatedTriggers,
+    lastTriggerCheck: new Date(),
   };
-};
+}
+
 /**
- * Routing function: Determines whether to continue research or end the builder.
- * This function decides if the gathered information is satisfactory or if more research is needed.
- *
- * @param state - The current state of the research builder
- * @returns Either "callModel" to continue research or END to finish the builder
+ * Rebalance Node
+ * Checks if rebalancing is needed and executes it
  */
-export const route = (
+async function rebalanceNode(
   state: typeof StateAnnotation.State,
-): '__end__' | 'callModel' => {
-  if (state.messages.length > 0) {
-    return '__end__';
+): Promise<typeof StateAnnotation.Update> {
+  if (!rebalancer) {
+    return {
+      messages: [new AIMessage('Rebalancer not configured')],
+    };
   }
-  return 'callModel';
-};
 
-// Finally, create the graph itself.
-const builder = new StateGraph(StateAnnotation)
-  // Add the nodes to do the work.
-  // Chaining the nodes together in this way
-  // updates the types of the StateGraph instance
-  // so you have static type checking when it comes time
-  // to add the edges.
-  .addNode('callModel', callModel)
-  // Regular edges mean "always transition to node B after node A is done"
-  // The "__start__" and "__end__" nodes are "virtual" nodes that are always present
-  // and represent the beginning and end of the builder.
-  .addEdge('__start__', 'callModel')
-  // Conditional edges optionally route to different nodes (or end)
-  .addConditionalEdges('callModel', route);
+  try {
+    const needsRebalancing = await rebalancer.needsRebalance();
 
-export const graph = builder.compile();
-graph.name = 'New Agent';
+    if (!needsRebalancing) {
+      return {
+        messages: [
+          new AIMessage('Portfolio is balanced, no rebalancing needed'),
+        ],
+        needsRebalancing: false,
+      };
+    }
+
+    console.log('⚖️  Executing rebalancing...');
+    await rebalancer.rebalance();
+
+    // Get updated portfolio
+    const status = rebalancer.getStatus();
+
+    return {
+      lastRebalance: new Date(),
+      needsRebalancing: false,
+      messages: [
+        new AIMessage(
+          `✅ Portfolio rebalanced successfully! Completed ${status.rebalanceCount} rebalances total.`,
+        ),
+      ],
+    };
+  } catch (error) {
+    console.error('Error rebalancing:', (error as Error).message);
+    return {
+      messages: [
+        new AIMessage(`❌ Rebalancing failed: ${(error as Error).message}`),
+      ],
+      needsRebalancing: false,
+    };
+  }
+}
+
+/**
+ * Portfolio Update Node
+ * Fetches and updates portfolio state
+ */
+async function updatePortfolioNode(
+  state: typeof StateAnnotation.State,
+): Promise<typeof StateAnnotation.Update> {
+  if (!state.walletAddress) {
+    return {};
+  }
+
+  try {
+    // Get balances for common tokens
+    const tokens = ['ETH', 'USDC', 'SOL'];
+    const holdings: Record<string, number> = {};
+
+    for (const token of tokens) {
+      try {
+        holdings[token] = await agentkit.getBalance(token);
+      } catch {
+        holdings[token] = 0;
+      }
+    }
+
+    // Get prices
+    const prices: Record<string, number> = {};
+    for (const token of tokens) {
+      try {
+        prices[token] = await priceFetcher.getPrice(`${token}/USD`);
+      } catch {
+        prices[token] = 0;
+      }
+    }
+
+    // Calculate values and total
+    const tokenData = [];
+    let totalValue = 0;
+    for (const token of tokens) {
+      const value = holdings[token] * prices[token];
+      tokenData.push({
+        symbol: token,
+        amount: holdings[token],
+        value,
+      });
+      totalValue += value;
+    }
+
+    // Calculate allocations
+    const allocation: Record<string, number> = {};
+    for (const token of tokens) {
+      allocation[token] =
+        totalValue > 0
+          ? (tokenData.find((t) => t.symbol === token)!.value / totalValue) *
+            100
+          : 0;
+    }
+
+    // Target allocation (configurable)
+    const targetAllocation: Record<string, number> = {
+      ETH: 60,
+      USDC: 40,
+      SOL: 0,
+    };
+
+    // Calculate drift
+    let maxDrift = 0;
+    for (const token of tokens) {
+      const drift = Math.abs(
+        allocation[token] - (targetAllocation[token] || 0),
+      );
+      if (drift > maxDrift) {
+        maxDrift = drift;
+      }
+    }
+
+    const portfolio: Portfolio = {
+      tokens: tokenData,
+      totalValue,
+      allocation,
+      targetAllocation,
+      drift: maxDrift,
+    };
+
+    return {
+      portfolio,
+      needsRebalancing: maxDrift > 5, // Rebalance if drift > 5%
+    };
+  } catch (error) {
+    console.error('Error updating portfolio:', (error as Error).message);
+    return {};
+  }
+}
+
+// ==================== CONDITIONAL EDGES ====================
+
+/**
+ * Determine if agent should continue, call tools, or end
+ */
+function shouldContinue(state: typeof StateAnnotation.State): string {
+  const lastMessage = state.messages[state.messages.length - 1];
+
+  // Check if there are tool calls
+  if (
+    lastMessage &&
+    'tool_calls' in lastMessage.additional_kwargs &&
+    lastMessage.additional_kwargs.tool_calls &&
+    lastMessage.additional_kwargs.tool_calls.length > 0
+  ) {
+    return 'tools';
+  }
+
+  return END;
+}
+
+/**
+ * Determine if triggers should be checked
+ */
+function shouldCheckTriggers(state: typeof StateAnnotation.State): string {
+  const lastCheck = state.lastTriggerCheck;
+
+  // Check triggers if:
+  // 1. Never checked before
+  // 2. More than 5 minutes since last check
+  if (!lastCheck) {
+    return 'checkTriggers';
+  }
+
+  const now = new Date();
+  const minutesSinceLastCheck =
+    (now.getTime() - lastCheck.getTime()) / (1000 * 60);
+
+  if (minutesSinceLastCheck >= 5) {
+    return 'checkTriggers';
+  }
+
+  return 'agent';
+}
+
+/**
+ * Determine if rebalancing is needed
+ */
+function shouldRebalance(state: typeof StateAnnotation.State): string {
+  if (state.needsRebalancing && rebalancer) {
+    return 'rebalance';
+  }
+
+  return 'agent';
+}
+
+// ==================== BUILD GRAPH ====================
+
+const workflow = new StateGraph(StateAnnotation)
+  // Add nodes
+  .addNode('agent', agentNode)
+  .addNode('tools', toolsNode)
+  .addNode('updatePortfolio', updatePortfolioNode)
+
+  // Add edges
+  .addEdge('__start__', 'updatePortfolio')
+  .addEdge('updatePortfolio', 'agent')
+  .addConditionalEdges('agent', shouldContinue, {
+    tools: 'tools',
+    [END]: END,
+  })
+  .addEdge('tools', 'agent');
+
+// Compile graph with checkpointing
+export const graph = workflow.compile({
+  checkpointer: memory,
+});
+
+graph.name = 'Recurring Executor Agent';
+
+// ==================== HELPER FUNCTIONS ====================
+
+/**
+ * Invoke the agent with a message
+ */
+export async function invokeAgent(
+  message: string,
+  walletAddress?: string,
+  threadId: string = 'default',
+) {
+  const config = {
+    configurable: {
+      thread_id: threadId,
+    },
+  };
+
+  const result = await graph.invoke(
+    {
+      messages: [new HumanMessage(message)],
+      walletAddress,
+    },
+    config,
+  );
+
+  return result;
+}
+
+/**
+ * Stream agent responses
+ */
+export async function streamAgent(
+  message: string,
+  walletAddress?: string,
+  threadId: string = 'default',
+) {
+  const config = {
+    configurable: {
+      thread_id: threadId,
+    },
+  };
+
+  const stream = await graph.stream(
+    {
+      messages: [new HumanMessage(message)],
+      walletAddress,
+    },
+    {
+      ...config,
+      streamMode: 'updates',
+    },
+  );
+
+  return stream;
+}
