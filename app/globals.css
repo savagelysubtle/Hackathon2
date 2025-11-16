@@ -186,102 +186,56 @@
 }
 
 /* Mobile Responsiveness Improvements */
-@layer utilities {
-  /* Ensure text is readable on mobile */
-  @media (max-width: 640px) {
-    .container {
-      @apply px-4;
-    }
-
-    /* Make cards stack nicely */
-    .grid {
-      @apply gap-3;
-    }
-
-    /* Adjust font sizes for mobile */
-    h1 {
-      @apply text-2xl;
-    }
-
-    h2 {
-      @apply text-xl;
-    }
-
-    /* Make buttons touch-friendly */
-    button {
-      @apply min-h-[44px];
-    }
-
-    /* Stack sidebar on mobile */
-    aside {
-      @apply w-full max-w-none;
-    }
-
-    /* Make charts responsive */
-    .recharts-wrapper {
-      @apply w-full;
-    }
-
-    /* Improve chat widget on mobile */
-    .chat-widget {
-      @apply bottom-4 right-4 left-4 max-w-none;
-    }
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
-
-  /* Tablet adjustments */
-  @media (min-width: 641px) and (max-width: 1024px) {
-    .container {
-      @apply px-6;
-    }
-
-    .grid-cols-4 {
-      @apply grid-cols-2;
-    }
-
-    aside {
-      @apply w-48;
-    }
+  
+  /* Make buttons touch-friendly */
+  button {
+    min-height: 44px;
   }
-
-  /* Ensure touch targets are adequate */
-  .touch-target {
-    @apply min-w-[44px] min-h-[44px];
+  
+  /* Adjust font sizes for mobile */
+  h1 {
+    font-size: 1.5rem;
+    line-height: 2rem;
   }
-
-  /* Prevent text from being too small */
-  .text-xs {
-    @apply text-sm;
+  
+  h2 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
   }
-
+  
   /* Make modal/dialog full screen on mobile */
-  @media (max-width: 640px) {
-    [role="dialog"] {
-      @apply w-full max-w-none h-full max-h-none rounded-none;
-    }
+  [role="dialog"] {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    border-radius: 0;
   }
-
-  /* Improve table responsiveness */
-  @media (max-width: 768px) {
-    table {
-      @apply block overflow-x-auto;
-    }
-  }
-
-  /* Stack grid layouts on mobile */
-  @media (max-width: 640px) {
-    .md\\:grid-cols-2,
-    .md\\:grid-cols-3,
-    .md\\:grid-cols-4,
-    .lg\\:grid-cols-2,
-    .lg\\:grid-cols-3,
-    .lg\\:grid-cols-4 {
-      @apply grid-cols-1;
-    }
-  }
-
-  /* Improve form inputs on mobile */
+  
+  /* Improve form inputs on mobile - prevents iOS zoom */
   input, textarea, select {
-    @apply text-base; /* Prevents iOS zoom on focus */
+    font-size: 16px;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* Improve table responsiveness */
+@media (max-width: 768px) {
+  table {
+    display: block;
+    overflow-x: auto;
   }
 }
 
