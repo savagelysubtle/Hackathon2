@@ -191,23 +191,23 @@
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
+
   /* Make buttons touch-friendly */
   button {
     min-height: 44px;
   }
-  
+
   /* Adjust font sizes for mobile */
   h1 {
     font-size: 1.5rem;
     line-height: 2rem;
   }
-  
+
   h2 {
     font-size: 1.25rem;
     line-height: 1.75rem;
   }
-  
+
   /* Make modal/dialog full screen on mobile */
   [role="dialog"] {
     width: 100%;
@@ -216,7 +216,7 @@
     max-height: none;
     border-radius: 0;
   }
-  
+
   /* Improve form inputs on mobile - prevents iOS zoom */
   input, textarea, select {
     font-size: 16px;
