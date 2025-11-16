@@ -248,6 +248,21 @@ export default function PortfolioPage() {
           <p className="text-sm text-muted-foreground mt-1">
             Last updated: {new Date().toLocaleString()}
           </p>
+          
+          {/* Debug info - show raw balances */}
+          {portfolioData.totalValue === 0 && (
+            <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+              <p className="text-sm font-medium text-yellow-600 dark:text-yellow-400 mb-2">
+                💡 Wallet Connected but No Assets Found
+              </p>
+              <div className="text-xs space-y-1 text-muted-foreground">
+                <p>• ETH Balance: {balances?.eth.amount || '0'} ETH</p>
+                <p>• Tokens Checked: USDC, USDT, DAI (Ethereum Mainnet)</p>
+                <p>• Make sure you're connected to Ethereum Mainnet</p>
+                <p>• Or the wallet has very small balances (&lt; $0.01)</p>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -340,19 +355,37 @@ export default function PortfolioPage() {
           <CardTitle>Asset Breakdown</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Asset</TableHead>
-                <TableHead className="text-right">Holdings</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right">Value</TableHead>
-                <TableHead className="text-right">% Portfolio</TableHead>
-                <TableHead className="text-right">24h Change</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {portfolioData.assets.map((asset) => (
+          {portfolioData.assets.length === 0 || portfolioData.totalValue === 0 ? (
+            <div className="text-center py-12 space-y-4">
+              <div className="text-muted-foreground">
+                <p className="text-lg font-medium">No Assets Found</p>
+                <p className="text-sm mt-2">
+                  Your connected wallet doesn't hold any of the tracked assets (ETH, USDC, USDT, DAI) on Ethereum Mainnet.
+                </p>
+              </div>
+              <div className="bg-muted/50 rounded-lg p-4 max-w-md mx-auto text-left">
+                <p className="text-sm font-medium mb-2">💡 Possible Reasons:</p>
+                <ul className="text-xs space-y-1 text-muted-foreground list-disc list-inside">
+                  <li>Wallet is on a different network (try switching to Ethereum Mainnet)</li>
+                  <li>Wallet has zero balance or very small amounts (&lt; $0.01)</li>
+                  <li>Token contracts might not be responding (check network)</li>
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Asset</TableHead>
+                  <TableHead className="text-right">Holdings</TableHead>
+                  <TableHead className="text-right">Price</TableHead>
+                  <TableHead className="text-right">Value</TableHead>
+                  <TableHead className="text-right">% Portfolio</TableHead>
+                  <TableHead className="text-right">24h Change</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {portfolioData.assets.map((asset) => (
                 <TableRow key={asset.symbol}>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -400,8 +433,9 @@ export default function PortfolioPage() {
                   </TableCell>
                 </TableRow>
               ))}
-            </TableBody>
-          </Table>
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
 
