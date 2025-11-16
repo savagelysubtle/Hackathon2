@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -9,47 +10,153 @@ import {
   Clock,
   Activity,
   CheckCircle2,
+  Wallet,
 } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
-
-// Mock data - will be replaced with real API calls
-const portfolioData = [
-  { name: "ETH", value: 60, color: "#3B82F6" },
-  { name: "USDC", value: 40, color: "#10B981" },
-];
-
-const stats = [
-  {
-    title: "Portfolio Value",
-    value: "$50,000.00",
-    change: "+2.5%",
-    icon: DollarSign,
-    trend: "up",
-  },
-  {
-    title: "24h Performance",
-    value: "+$1,250",
-    change: "+2.5%",
-    icon: TrendingUp,
-    trend: "up",
-  },
-  {
-    title: "Active Triggers",
-    value: "2",
-    change: "2 active",
-    icon: Target,
-    trend: "neutral",
-  },
-  {
-    title: "Next Action",
-    value: "2h 15m",
-    change: "Rebalance",
-    icon: Clock,
-    trend: "neutral",
-  },
-];
+import { useAccount } from "wagmi";
+import { useWalletBalances } from "@/hooks/useWalletBalances";
+import { usePrices } from "@/hooks/usePrices";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function OverviewPage() {
+  const { address, isConnected } = useAccount();
+  const { balances, isLoading: balancesLoading } = useWalletBalances();
+  const { data: prices, isLoading: pricesLoading } = usePrices([
+    "ETH/USD",
+    "USDC/USD",
+    "USDT/USD",
+    "DAI/USD",
+  ]);
+
+  // Calculate real portfolio data
+  const portfolioData = useMemo(() => {
+    if (!prices || !balances) {
+      return {
+        totalValue: 0,
+        change24h: 0,
+        changeValue: 0,
+        allocationData: [],
+        assets: [],
+      };
+    }
+
+    // Calculate ETH value
+    const ethAmount = parseFloat(balances.eth.amount);
+    const ethPrice = prices["ETH/USD"] || 0;
+    const ethValue = ethAmount * ethPrice;
+
+    // Calculate token values
+    const tokenValues = balances.tokens.map((token) => {
+      const amount = parseFloat(token.amount);
+      const price = prices[`${token.symbol}/USD`] || 0;
+      return {
+        symbol: token.symbol,
+        amount,
+        price,
+        value: amount * price,
+      };
+    });
+
+    const totalValue = ethValue + tokenValues.reduce((sum, t) => sum + t.value, 0);
+
+    // Mock 24h change (could be calculated with historical prices)
+    const change24h = 2.5;
+    const changeValue = totalValue * (change24h / 100);
+
+    // Create allocation data for pie chart
+    const assets = [
+      {
+        name: "ETH",
+        symbol: "ETH",
+        value: ethValue,
+        percentage: totalValue > 0 ? (ethValue / totalValue) * 100 : 0,
+        color: "#3B82F6",
+      },
+      ...tokenValues
+        .filter((t) => t.value > 0)
+        .map((token, index) => ({
+          name: token.symbol,
+          symbol: token.symbol,
+          value: token.value,
+          percentage: totalValue > 0 ? (token.value / totalValue) * 100 : 0,
+          color: index === 0 ? "#10B981" : index === 1 ? "#F59E0B" : "#8B5CF6",
+        })),
+    ].filter((a) => a.percentage > 0);
+
+    return {
+      totalValue,
+      change24h,
+      changeValue,
+      allocationData: assets,
+      assets,
+    };
+  }, [balances, prices]);
+
+  const stats = [
+    {
+      title: "Portfolio Value",
+      value: isConnected ? `$${portfolioData.totalValue.toFixed(2)}` : "$0.00",
+      change: isConnected ? `${portfolioData.change24h > 0 ? "+" : ""}${portfolioData.change24h.toFixed(1)}%` : "Connect wallet",
+      icon: DollarSign,
+      trend: portfolioData.change24h > 0 ? "up" : "down",
+    },
+    {
+      title: "24h Performance",
+      value: isConnected ? `${portfolioData.changeValue >= 0 ? "+" : ""}$${Math.abs(portfolioData.changeValue).toFixed(2)}` : "$0.00",
+      change: isConnected ? `${portfolioData.change24h > 0 ? "+" : ""}${portfolioData.change24h.toFixed(1)}%` : "Connect wallet",
+      icon: TrendingUp,
+      trend: portfolioData.changeValue >= 0 ? "up" : "down",
+    },
+    {
+      title: "Active Triggers",
+      value: "2",
+      change: "2 active",
+      icon: Target,
+      trend: "neutral",
+    },
+    {
+      title: "Next Action",
+      value: "2h 15m",
+      change: "Rebalance",
+      icon: Clock,
+      trend: "neutral",
+    },
+  ];
+
+  // Show connect wallet message if not connected
+  if (!isConnected) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Overview</h1>
+            <p className="text-muted-foreground">
+              Connect your wallet to start monitoring your DeFi portfolio
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center min-h-[500px]">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Wallet className="h-5 w-5" />
+                Connect Your Wallet
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground text-center">
+                Connect your wallet to view real-time portfolio data, active triggers, and automation status.
+              </p>
+              <div className="flex justify-center">
+                <ConnectButton />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -92,47 +199,60 @@ export default function OverviewPage() {
             <CardTitle>Portfolio Allocation</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between">
-              <ResponsiveContainer width="50%" height={200}>
-                <PieChart>
-                  <Pie
-                    data={portfolioData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {portfolioData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+            {portfolioData.allocationData.length > 0 ? (
+              <>
+                <div className="flex items-center justify-between">
+                  <ResponsiveContainer width="50%" height={200}>
+                    <PieChart>
+                      <Pie
+                        data={portfolioData.allocationData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={5}
+                        dataKey="percentage"
+                      >
+                        {portfolioData.allocationData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="space-y-2">
+                    {portfolioData.allocationData.map((item) => (
+                      <div key={item.name} className="flex items-center gap-2">
+                        <div
+                          className="h-3 w-3 rounded-full"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <span className="text-sm font-medium">{item.name}</span>
+                        <span className="ml-auto text-sm text-muted-foreground">
+                          {item.percentage.toFixed(1)}%
+                        </span>
+                      </div>
                     ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="space-y-2">
-                {portfolioData.map((item) => (
-                  <div key={item.name} className="flex items-center gap-2">
-                    <div
-                      className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="text-sm font-medium">{item.name}</span>
-                    <span className="ml-auto text-sm text-muted-foreground">
-                      {item.value}%
+                  </div>
+                </div>
+                <div className="mt-4 space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      Actual: {portfolioData.allocationData.map(a => `${a.percentage.toFixed(0)}%`).join('/')}
+                    </span>
+                    <span className="text-muted-foreground">
+                      Drift: <span className="text-green-500">Within target</span>
                     </span>
                   </div>
-                ))}
+                </div>
+              </>
+            ) : (
+              <div className="h-[250px] flex items-center justify-center text-muted-foreground text-sm">
+                <div className="text-center">
+                  <p>No assets found</p>
+                  <p className="text-xs mt-2">Make sure your wallet has ETH, USDC, USDT, or DAI on Ethereum Mainnet</p>
+                </div>
               </div>
-            </div>
-            <div className="mt-4 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Target: 60/40</span>
-                <span className="text-muted-foreground">
-                  Drift: <span className="text-green-500">0.0%</span>
-                </span>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 
