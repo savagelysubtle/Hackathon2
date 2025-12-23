@@ -49,6 +49,7 @@ jobs:
         with:
           ignore_words_file: .codespellignore
           path: src/
+          skip: "*.js,*.js.map,*.d.ts,*.d.ts.map"
 
       - name: Format check
         run: bun run format:check
