@@ -1,19 +1,20 @@
 // @ts-check
 import eslint from '@eslint/js';
-import vitest from '@vitest/eslint-plugin';
 import eslintConfigPrettier from 'eslint-config-prettier';
-import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-// This is just an example default config for ESLint.
-// You should change it to your needs following the documentation.
 export default tseslint.config(
   {
     ignores: [
       '**/build/**',
       '**/tmp/**',
       '**/coverage/**',
-      'packages/*/build/**',
+      '**/node_modules/**',
+      '**/.next/**',
+      '**/dist/**',
+      '**/*.js',
+      '**/*.d.ts',
+      '**/*.map',
     ],
   },
   eslint.configs.recommended,
@@ -21,51 +22,29 @@ export default tseslint.config(
   {
     extends: [...tseslint.configs.recommended],
 
-    files: ['**/*.ts', '**/*.mts', 'packages/*/src/**/*.ts'],
+    files: ['**/*.ts', '**/*.tsx', '**/*.mts'],
 
     plugins: {
       '@typescript-eslint': tseslint.plugin,
     },
 
     rules: {
-      '@typescript-eslint/explicit-function-return-type': 'warn',
+      '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/no-require-imports': 'off',
     },
 
     languageOptions: {
       parser: tseslint.parser,
-      ecmaVersion: 2020,
+      ecmaVersion: 2022,
       sourceType: 'module',
 
-      globals: {
-        ...globals.node,
-      },
-
       parserOptions: {
-        project: true,
-      },
-    },
-  },
-  {
-    files: ['__tests__/**'],
-
-    plugins: {
-      vitest,
-    },
-
-    rules: {
-      ...vitest.configs.recommended.rules,
-    },
-
-    settings: {
-      vitest: {
-        typecheck: true,
-      },
-    },
-
-    languageOptions: {
-      globals: {
-        ...vitest.environments.env.globals,
+        project: './tsconfig.json',
       },
     },
   },
