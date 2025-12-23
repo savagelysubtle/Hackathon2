@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+.next/
+dist/
+build/
+
+# Generated files
+*.js.map
+*.d.ts
+*.d.ts.map
+bun.lock
+package-lock.json
+yarn.lock
+
+# Config files that Prettier doesn't understand
+.codespellignore
+.editorconfig
+.env
+.env.*
+.gitignore
+.dockerignore
+.eslintrc.cjs
+*.yml
+*.yaml
+
+# Other
+coverage/
+.turbo/
+static/
+public/
+
