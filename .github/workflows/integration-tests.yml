@@ -19,18 +19,22 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node-version: [18.x, 20.x]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "yarn"
+          bun-version: latest
+
       - name: Install dependencies
-        run: yarn install --immutable
+        run: bun install --frozen-lockfile
+
       - name: Build project
-        run: yarn build
+        run: bun run build
+
       - name: Run integration tests
-        run: yarn test:int
+        run: bun run test:langgraph
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

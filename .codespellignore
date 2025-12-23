@@ -1,0 +1,13 @@
+# Common technical terms and project-specific words to ignore
+ether
+ethers
+wagmi
+defi
+DeFi
+testnet
+mainnet
+warden
+viem
+radix
+tanstack
+
