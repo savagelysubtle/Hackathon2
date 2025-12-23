@@ -58,7 +58,9 @@ export const DEFAULT_TOKENS: Record<string, TokenConfig> = {
 /**
  * Hook to fetch wallet balances (ETH + ERC20 tokens)
  */
-export function useWalletBalances(tokens: TokenConfig[] = Object.values(DEFAULT_TOKENS)) {
+export function useWalletBalances(
+  tokens: TokenConfig[] = Object.values(DEFAULT_TOKENS),
+) {
   const { address, isConnected } = useAccount();
 
   // Get ETH balance
@@ -133,12 +135,19 @@ export function useWalletBalances(tokens: TokenConfig[] = Object.values(DEFAULT_
 /**
  * Hook to combine wallet balances with price data
  */
-export function usePortfolio(tokens: TokenConfig[] = Object.values(DEFAULT_TOKENS)) {
-  const { balances, isLoading: balancesLoading, isConnected, address } = useWalletBalances(tokens);
+export function usePortfolio(
+  tokens: TokenConfig[] = Object.values(DEFAULT_TOKENS),
+) {
+  const {
+    balances,
+    isLoading: balancesLoading,
+    isConnected,
+    address,
+  } = useWalletBalances(tokens);
 
   // Get price pairs
   const pricePairs = useMemo(() => {
-    return ['ETH/USD', ...tokens.map(t => `${t.symbol}/USD`)];
+    return ['ETH/USD', ...tokens.map((t) => `${t.symbol}/USD`)];
   }, [tokens]);
 
   // This will be implemented after creating the usePrices hook
@@ -151,4 +160,3 @@ export function usePortfolio(tokens: TokenConfig[] = Object.values(DEFAULT_TOKEN
     address,
   };
 }
-

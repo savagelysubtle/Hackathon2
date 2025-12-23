@@ -21,7 +21,7 @@ import { WardenSpacesManager } from '../warden/spaces-manager.js';
  */
 export function createPortfolioAnalysisTool(
   priceFetcher: PriceFetcher,
-  spacesManager: WardenSpacesManager
+  spacesManager: WardenSpacesManager,
 ) {
   return new DynamicStructuredTool({
     name: 'analyze_portfolio',
@@ -64,7 +64,8 @@ export function createPortfolioAnalysisTool(
         // Calculate allocations
         const allocations: Record<string, number> = {};
         for (const asset of Object.keys(holdings)) {
-          allocations[asset] = totalValue > 0 ? (values[asset] / totalValue) * 100 : 0;
+          allocations[asset] =
+            totalValue > 0 ? (values[asset] / totalValue) * 100 : 0;
         }
 
         // Calculate drift from targets
@@ -109,8 +110,10 @@ export function createPortfolioAnalysisTool(
             .map(([asset, drift]) => `${asset} (${drift.toFixed(1)}%)`);
 
           rebalanceRec = `⚠️ Rebalancing recommended:\n`;
-          if (overweight.length > 0) rebalanceRec += `  Overweight: ${overweight.join(', ')}\n`;
-          if (underweight.length > 0) rebalanceRec += `  Underweight: ${underweight.join(', ')}`;
+          if (overweight.length > 0)
+            rebalanceRec += `  Overweight: ${overweight.join(', ')}\n`;
+          if (underweight.length > 0)
+            rebalanceRec += `  Underweight: ${underweight.join(', ')}`;
         }
 
         const analysis = {
@@ -137,7 +140,9 @@ export function createPortfolioAnalysisTool(
             `💰 Your portfolio is worth $${totalValue.toFixed(2)}`,
             `📊 Current allocation is ${allocations['ETH']?.toFixed(0) || 0}% ETH, ${allocations['USDC']?.toFixed(0) || 0}% USDC`,
             `🎯 Target allocation is ${config.targetAllocations['ETH'] || 0}% ETH, ${config.targetAllocations['USDC'] || 0}% USDC`,
-            needsRebalancing ? '⚠️ Portfolio needs rebalancing' : '✅ Portfolio is balanced',
+            needsRebalancing
+              ? '⚠️ Portfolio needs rebalancing'
+              : '✅ Portfolio is balanced',
             `🛡️ Risk level: ${riskLevel} (${stablecoinAllocation.toFixed(0)}% in stablecoins)`,
           ],
         };
@@ -257,7 +262,7 @@ export function createMarketInsightsTool(priceFetcher: PriceFetcher) {
  */
 export function createTriggerRecommendationsTool(
   priceFetcher: PriceFetcher,
-  spacesManager: WardenSpacesManager
+  spacesManager: WardenSpacesManager,
 ) {
   return new DynamicStructuredTool({
     name: 'recommend_triggers',
@@ -299,7 +304,7 @@ export function createTriggerRecommendationsTool(
           if (asset === 'USDC' || amount === 0) continue;
 
           const hasExistingTrigger = existingTriggers.some(
-            t => t.asset === asset && t.active
+            (t) => t.asset === asset && t.active,
           );
 
           if (!hasExistingTrigger) {
@@ -320,7 +325,7 @@ export function createTriggerRecommendationsTool(
         // 2. Buy the dip triggers
         for (const [asset] of Object.entries(prices)) {
           const hasExistingDipTrigger = existingTriggers.some(
-            t => t.asset === asset && t.condition === 'dump' && t.active
+            (t) => t.asset === asset && t.condition === 'dump' && t.active,
           );
 
           if (!hasExistingDipTrigger) {
@@ -339,7 +344,10 @@ export function createTriggerRecommendationsTool(
         // 3. Portfolio protection triggers
         const totalVolatileValue = Object.entries(holdings)
           .filter(([asset]) => asset !== 'USDC')
-          .reduce((sum, [asset, amount]) => sum + (amount * (prices[asset] || 0)), 0);
+          .reduce(
+            (sum, [asset, amount]) => sum + amount * (prices[asset] || 0),
+            0,
+          );
 
         if (totalVolatileValue > 1000) {
           recommendations.push({
@@ -349,7 +357,8 @@ export function createTriggerRecommendationsTool(
             action: 'Sell 50% of portfolio to USDC',
             reason: 'Protect against major market downturn',
             priority: 'Low',
-            command: 'create_trigger { asset: "ETH", condition: "dump", threshold: 20, action: "Sell 50% to USDC" }',
+            command:
+              'create_trigger { asset: "ETH", condition: "dump", threshold: 20, action: "Sell 50% to USDC" }',
           });
         }
 
@@ -364,7 +373,7 @@ export function createTriggerRecommendationsTool(
               ? `⭐ Top priority: ${recommendations[0].action}`
               : '✅ Your trigger coverage looks good!',
           ],
-          quickActions: recommendations.slice(0, 2).map(r => ({
+          quickActions: recommendations.slice(0, 2).map((r) => ({
             description: `Set ${r.type} trigger for ${r.asset}`,
             command: r.command,
           })),
@@ -396,7 +405,10 @@ export function createExecutionHistoryTool(spacesManager: WardenSpacesManager) {
       'Get historical execution data from Warden Space including swaps, rebalances, ' +
       'and trigger executions with performance analytics.',
     schema: z.object({
-      limit: z.number().optional().describe('Number of records to retrieve (default: 20)'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Number of records to retrieve (default: 20)'),
       type: z
         .enum(['all', 'swap', 'rebalance', 'trigger'])
         .optional()
@@ -407,22 +419,28 @@ export function createExecutionHistoryTool(spacesManager: WardenSpacesManager) {
         const history = await spacesManager.getExecutionHistory(limit);
 
         // Filter by type if specified
-        const filtered = type === 'all'
-          ? history
-          : history.filter(record => record.type === type);
+        const filtered =
+          type === 'all'
+            ? history
+            : history.filter((record) => record.type === type);
 
         // Calculate statistics
-        const successCount = filtered.filter(r => r.status === 'success').length;
-        const failureCount = filtered.filter(r => r.status === 'failure').length;
-        const successRate = filtered.length > 0
-          ? ((successCount / filtered.length) * 100).toFixed(1)
-          : '0';
+        const successCount = filtered.filter(
+          (r) => r.status === 'success',
+        ).length;
+        const failureCount = filtered.filter(
+          (r) => r.status === 'failure',
+        ).length;
+        const successRate =
+          filtered.length > 0
+            ? ((successCount / filtered.length) * 100).toFixed(1)
+            : '0';
 
         // Group by type
         const byType = {
-          swap: filtered.filter(r => r.type === 'swap').length,
-          rebalance: filtered.filter(r => r.type === 'rebalance').length,
-          trigger: filtered.filter(r => r.type === 'trigger').length,
+          swap: filtered.filter((r) => r.type === 'swap').length,
+          rebalance: filtered.filter((r) => r.type === 'rebalance').length,
+          trigger: filtered.filter((r) => r.type === 'trigger').length,
         };
 
         const analysis = {
@@ -433,7 +451,7 @@ export function createExecutionHistoryTool(spacesManager: WardenSpacesManager) {
             failed: failureCount,
           },
           byType,
-          recentExecutions: filtered.slice(0, 10).map(record => ({
+          recentExecutions: filtered.slice(0, 10).map((record) => ({
             id: record.id,
             type: record.type,
             status: record.status === 'success' ? '✅' : '❌',
@@ -449,7 +467,9 @@ export function createExecutionHistoryTool(spacesManager: WardenSpacesManager) {
               ? `🕐 Last execution: ${filtered[0].timestamp}`
               : '📝 No executions yet',
           ],
-          storedOnChain: spacesManager.isOnChain() ? '✅ Stored on Warden Chain' : '📝 Stored locally',
+          storedOnChain: spacesManager.isOnChain()
+            ? '✅ Stored on Warden Chain'
+            : '📝 Stored locally',
         };
 
         return JSON.stringify(analysis, null, 2);
@@ -461,4 +481,3 @@ export function createExecutionHistoryTool(spacesManager: WardenSpacesManager) {
     },
   });
 }
-

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
   TrendingUp,
   DollarSign,
@@ -11,21 +11,21 @@ import {
   Activity,
   CheckCircle2,
   Wallet,
-} from "lucide-react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
-import { useAccount } from "wagmi";
-import { useWalletBalances } from "@/hooks/useWalletBalances";
-import { usePrices } from "@/hooks/usePrices";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+} from 'lucide-react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { useAccount } from 'wagmi';
+import { useWalletBalances } from '@/hooks/useWalletBalances';
+import { usePrices } from '@/hooks/usePrices';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 export default function OverviewPage() {
   const { address, isConnected } = useAccount();
   const { balances, isLoading: balancesLoading } = useWalletBalances();
   const { data: prices, isLoading: pricesLoading } = usePrices([
-    "ETH/USD",
-    "USDC/USD",
-    "USDT/USD",
-    "DAI/USD",
+    'ETH/USD',
+    'USDC/USD',
+    'USDT/USD',
+    'DAI/USD',
   ]);
 
   // Calculate real portfolio data
@@ -42,7 +42,7 @@ export default function OverviewPage() {
 
     // Calculate ETH value
     const ethAmount = parseFloat(balances.eth.amount);
-    const ethPrice = prices["ETH/USD"] || 0;
+    const ethPrice = prices['ETH/USD'] || 0;
     const ethValue = ethAmount * ethPrice;
 
     // Calculate token values
@@ -57,7 +57,8 @@ export default function OverviewPage() {
       };
     });
 
-    const totalValue = ethValue + tokenValues.reduce((sum, t) => sum + t.value, 0);
+    const totalValue =
+      ethValue + tokenValues.reduce((sum, t) => sum + t.value, 0);
 
     // Mock 24h change (could be calculated with historical prices)
     const change24h = 2.5;
@@ -66,11 +67,11 @@ export default function OverviewPage() {
     // Create allocation data for pie chart
     const assets = [
       {
-        name: "ETH",
-        symbol: "ETH",
+        name: 'ETH',
+        symbol: 'ETH',
         value: ethValue,
         percentage: totalValue > 0 ? (ethValue / totalValue) * 100 : 0,
-        color: "#3B82F6",
+        color: '#3B82F6',
       },
       ...tokenValues
         .filter((t) => t.value > 0)
@@ -79,7 +80,7 @@ export default function OverviewPage() {
           symbol: token.symbol,
           value: token.value,
           percentage: totalValue > 0 ? (token.value / totalValue) * 100 : 0,
-          color: index === 0 ? "#10B981" : index === 1 ? "#F59E0B" : "#8B5CF6",
+          color: index === 0 ? '#10B981' : index === 1 ? '#F59E0B' : '#8B5CF6',
         })),
     ].filter((a) => a.percentage > 0);
 
@@ -94,32 +95,38 @@ export default function OverviewPage() {
 
   const stats = [
     {
-      title: "Portfolio Value",
-      value: isConnected ? `$${portfolioData.totalValue.toFixed(2)}` : "$0.00",
-      change: isConnected ? `${portfolioData.change24h > 0 ? "+" : ""}${portfolioData.change24h.toFixed(1)}%` : "Connect wallet",
+      title: 'Portfolio Value',
+      value: isConnected ? `$${portfolioData.totalValue.toFixed(2)}` : '$0.00',
+      change: isConnected
+        ? `${portfolioData.change24h > 0 ? '+' : ''}${portfolioData.change24h.toFixed(1)}%`
+        : 'Connect wallet',
       icon: DollarSign,
-      trend: portfolioData.change24h > 0 ? "up" : "down",
+      trend: portfolioData.change24h > 0 ? 'up' : 'down',
     },
     {
-      title: "24h Performance",
-      value: isConnected ? `${portfolioData.changeValue >= 0 ? "+" : ""}$${Math.abs(portfolioData.changeValue).toFixed(2)}` : "$0.00",
-      change: isConnected ? `${portfolioData.change24h > 0 ? "+" : ""}${portfolioData.change24h.toFixed(1)}%` : "Connect wallet",
+      title: '24h Performance',
+      value: isConnected
+        ? `${portfolioData.changeValue >= 0 ? '+' : ''}$${Math.abs(portfolioData.changeValue).toFixed(2)}`
+        : '$0.00',
+      change: isConnected
+        ? `${portfolioData.change24h > 0 ? '+' : ''}${portfolioData.change24h.toFixed(1)}%`
+        : 'Connect wallet',
       icon: TrendingUp,
-      trend: portfolioData.changeValue >= 0 ? "up" : "down",
+      trend: portfolioData.changeValue >= 0 ? 'up' : 'down',
     },
     {
-      title: "Active Triggers",
-      value: "2",
-      change: "2 active",
+      title: 'Active Triggers',
+      value: '2',
+      change: '2 active',
       icon: Target,
-      trend: "neutral",
+      trend: 'neutral',
     },
     {
-      title: "Next Action",
-      value: "2h 15m",
-      change: "Rebalance",
+      title: 'Next Action',
+      value: '2h 15m',
+      change: 'Rebalance',
       icon: Clock,
-      trend: "neutral",
+      trend: 'neutral',
     },
   ];
 
@@ -146,7 +153,8 @@ export default function OverviewPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground text-center">
-                Connect your wallet to view real-time portfolio data, active triggers, and automation status.
+                Connect your wallet to view real-time portfolio data, active
+                triggers, and automation status.
               </p>
               <div className="flex justify-center">
                 <ConnectButton />
@@ -184,9 +192,7 @@ export default function OverviewPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">
-                {stat.change}
-              </p>
+              <p className="text-xs text-muted-foreground">{stat.change}</p>
             </CardContent>
           </Card>
         ))}
@@ -237,10 +243,14 @@ export default function OverviewPage() {
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">
-                      Actual: {portfolioData.allocationData.map(a => `${a.percentage.toFixed(0)}%`).join('/')}
+                      Actual:{' '}
+                      {portfolioData.allocationData
+                        .map((a) => `${a.percentage.toFixed(0)}%`)
+                        .join('/')}
                     </span>
                     <span className="text-muted-foreground">
-                      Drift: <span className="text-green-500">Within target</span>
+                      Drift:{' '}
+                      <span className="text-green-500">Within target</span>
                     </span>
                   </div>
                 </div>
@@ -249,7 +259,10 @@ export default function OverviewPage() {
               <div className="h-[250px] flex items-center justify-center text-muted-foreground text-sm">
                 <div className="text-center">
                   <p>No assets found</p>
-                  <p className="text-xs mt-2">Make sure your wallet has ETH, USDC, USDT, or DAI on Ethereum Mainnet</p>
+                  <p className="text-xs mt-2">
+                    Make sure your wallet has ETH, USDC, USDT, or DAI on
+                    Ethereum Mainnet
+                  </p>
                 </div>
               </div>
             )}
@@ -265,29 +278,29 @@ export default function OverviewPage() {
             <div className="space-y-4">
               {[
                 {
-                  action: "Portfolio Rebalanced",
-                  time: "2 hours ago",
-                  status: "success",
+                  action: 'Portfolio Rebalanced',
+                  time: '2 hours ago',
+                  status: 'success',
                 },
                 {
-                  action: "Health Check Passed",
-                  time: "4 hours ago",
-                  status: "success",
+                  action: 'Health Check Passed',
+                  time: '4 hours ago',
+                  status: 'success',
                 },
                 {
-                  action: "Price Trigger Checked",
-                  time: "5 minutes ago",
-                  status: "neutral",
+                  action: 'Price Trigger Checked',
+                  time: '5 minutes ago',
+                  status: 'neutral',
                 },
                 {
-                  action: "Swap Executed: ETH → USDC",
-                  time: "1 day ago",
-                  status: "success",
+                  action: 'Swap Executed: ETH → USDC',
+                  time: '1 day ago',
+                  status: 'success',
                 },
               ].map((activity, index) => (
                 <div key={index} className="flex items-center gap-4">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                    {activity.status === "success" ? (
+                    {activity.status === 'success' ? (
                       <CheckCircle2 className="h-4 w-4 text-green-500" />
                     ) : (
                       <Activity className="h-4 w-4 text-blue-500" />
@@ -315,21 +328,21 @@ export default function OverviewPage() {
           <div className="space-y-4">
             {[
               {
-                asset: "SOL",
-                baseline: "$200.00",
-                current: "$215.00",
-                change: "+7.5%",
-                threshold: "15%",
-                action: "Sell 10%",
+                asset: 'SOL',
+                baseline: '$200.00',
+                current: '$215.00',
+                change: '+7.5%',
+                threshold: '15%',
+                action: 'Sell 10%',
                 progress: 50,
               },
               {
-                asset: "ETH",
-                baseline: "$3,500.00",
-                current: "$3,675.00",
-                change: "+5.0%",
-                threshold: "20%",
-                action: "Sell 5%",
+                asset: 'ETH',
+                baseline: '$3,500.00',
+                current: '$3,675.00',
+                change: '+5.0%',
+                threshold: '20%',
+                action: 'Sell 5%',
                 progress: 25,
               },
             ].map((trigger, index) => (

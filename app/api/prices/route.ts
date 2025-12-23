@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 // Mock Oracle Data - this will be replaced with Warden Oracle
 export async function POST(request: Request) {
@@ -7,20 +7,20 @@ export async function POST(request: Request) {
 
     if (!Array.isArray(pairs) || pairs.length === 0) {
       return NextResponse.json(
-        { error: "Invalid pairs parameter" },
-        { status: 400 }
+        { error: 'Invalid pairs parameter' },
+        { status: 400 },
       );
     }
 
     // TODO: Integrate with actual Warden Oracle from /src/oracle/price-fetcher.ts
     // For now, return mock prices
     const mockPrices: Record<string, number> = {
-      "ETH/USD": 3500.0,
-      "USDC/USD": 1.0,
-      "USDT/USD": 1.0,
-      "DAI/USD": 1.0,
-      "SOL/USD": 220.0,
-      "BTC/USD": 65000.0,
+      'ETH/USD': 3500.0,
+      'USDC/USD': 1.0,
+      'USDT/USD': 1.0,
+      'DAI/USD': 1.0,
+      'SOL/USD': 220.0,
+      'BTC/USD': 65000.0,
     };
 
     const prices: Record<string, number> = {};
@@ -30,10 +30,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json(prices);
   } catch (error) {
-    console.error("Error fetching prices:", error);
+    console.error('Error fetching prices:', error);
     return NextResponse.json(
-      { error: "Failed to fetch prices" },
-      { status: 500 }
+      { error: 'Failed to fetch prices' },
+      { status: 500 },
     );
   }
 }

@@ -61,7 +61,10 @@ async function runSimpleTests() {
     if (result.messages && result.messages.length > 0) {
       const lastMessage = result.messages[result.messages.length - 1];
       console.log('   ✅ Agent responded successfully');
-      console.log('   💬 Response preview:', lastMessage.content.toString().substring(0, 100) + '...\n');
+      console.log(
+        '   💬 Response preview:',
+        lastMessage.content.toString().substring(0, 100) + '...\n',
+      );
       passedTests++;
     } else {
       throw new Error('No messages in response');
@@ -91,8 +94,14 @@ async function runSimpleTests() {
 
     if (result.portfolio !== undefined || result.triggers !== undefined) {
       console.log('   ✅ State is being tracked');
-      console.log('   📊 Portfolio state:', result.portfolio ? 'Present' : 'Not loaded');
-      console.log('   🎯 Triggers state:', result.triggers ? `${result.triggers.length} triggers` : 'Empty\n');
+      console.log(
+        '   📊 Portfolio state:',
+        result.portfolio ? 'Present' : 'Not loaded',
+      );
+      console.log(
+        '   🎯 Triggers state:',
+        result.triggers ? `${result.triggers.length} triggers` : 'Empty\n',
+      );
       passedTests++;
     } else {
       console.log('   ⚠️  State tracking working (empty state is valid)\n');
@@ -116,7 +125,10 @@ async function runSimpleTests() {
     if (result.messages && result.messages.length > 0) {
       console.log('   ✅ Tool integration working');
       const lastMessage = result.messages[result.messages.length - 1];
-      console.log('   💰 Price check response:', lastMessage.content.toString().substring(0, 150) + '...\n');
+      console.log(
+        '   💰 Price check response:',
+        lastMessage.content.toString().substring(0, 150) + '...\n',
+      );
       passedTests++;
     } else {
       throw new Error('No response from tool call');
@@ -139,8 +151,14 @@ async function runSimpleTests() {
     if (result.messages && result.messages.length > 0) {
       console.log('   ✅ Portfolio node working');
       if (result.portfolio) {
-        console.log('   📊 Total value: $' + (result.portfolio.totalValue || 0).toFixed(2));
-        console.log('   🪙 Tokens tracked:', result.portfolio.tokens?.length || 0);
+        console.log(
+          '   📊 Total value: $' +
+            (result.portfolio.totalValue || 0).toFixed(2),
+        );
+        console.log(
+          '   🪙 Tokens tracked:',
+          result.portfolio.tokens?.length || 0,
+        );
       }
       console.log();
       passedTests++;
@@ -159,11 +177,15 @@ async function runSimpleTests() {
   console.log('═══════════════════════════════════════════════════');
   console.log(`✅ Passed: ${passedTests}`);
   console.log(`❌ Failed: ${failedTests}`);
-  console.log(`📈 Success Rate: ${((passedTests / (passedTests + failedTests)) * 100).toFixed(1)}%`);
+  console.log(
+    `📈 Success Rate: ${((passedTests / (passedTests + failedTests)) * 100).toFixed(1)}%`,
+  );
   console.log('═══════════════════════════════════════════════════\n');
 
   if (failedTests === 0) {
-    console.log('🎉 All tests passed! LangGraph migration is working correctly! 🎉\n');
+    console.log(
+      '🎉 All tests passed! LangGraph migration is working correctly! 🎉\n',
+    );
     process.exit(0);
   } else {
     console.log('⚠️  Some tests failed. Review the errors above.\n');
@@ -176,4 +198,3 @@ runSimpleTests().catch((error) => {
   console.error('\n❌ Test suite failed:', error.message);
   process.exit(1);
 });
-

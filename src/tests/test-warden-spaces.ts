@@ -31,7 +31,8 @@ async function testWardenSpaces() {
     // Initialize Warden Agent Kit
     console.log('1️⃣ Initializing Warden Agent Kit...');
     const agentkit = new WardenAgentKit({
-      privateKeyOrAccount: (process.env.PRIVATE_KEY as `0x${string}`) || undefined,
+      privateKeyOrAccount:
+        (process.env.PRIVATE_KEY as `0x${string}`) || undefined,
     });
     console.log('   ✅ Agent Kit initialized\n');
 
@@ -41,7 +42,10 @@ async function testWardenSpaces() {
     const mockWallet = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb';
     const spaceId = await spacesManager.initialize(mockWallet);
     console.log('   ✅ Space created:', spaceId);
-    console.log('   📝 Storage mode:', spacesManager.isOnChain() ? 'On-chain' : 'Local\n');
+    console.log(
+      '   📝 Storage mode:',
+      spacesManager.isOnChain() ? 'On-chain' : 'Local\n',
+    );
 
     // Test 1: Save and Load Triggers
     console.log('3️⃣ Testing Trigger Storage...');
@@ -53,8 +57,8 @@ async function testWardenSpaces() {
       action: 'Sell 10% SOL',
       active: true,
       progress: 0,
-      baselinePrice: 95.50,
-      currentPrice: 95.50,
+      baselinePrice: 95.5,
+      currentPrice: 95.5,
       created: new Date().toISOString(),
     };
 
@@ -63,12 +67,17 @@ async function testWardenSpaces() {
 
     const loadedTriggers = await spacesManager.loadTriggers();
     console.log('   ✅ Triggers loaded:', loadedTriggers.length);
-    console.log('   📊 Trigger data:', loadedTriggers[0]?.id, loadedTriggers[0]?.asset, '\n');
+    console.log(
+      '   📊 Trigger data:',
+      loadedTriggers[0]?.id,
+      loadedTriggers[0]?.asset,
+      '\n',
+    );
 
     // Test 2: Update Trigger
     console.log('4️⃣ Testing Trigger Update...');
     await spacesManager.updateTrigger(testTrigger.id, {
-      currentPrice: 105.00,
+      currentPrice: 105.0,
       progress: 50,
     });
     const updatedTriggers = await spacesManager.loadTriggers();
@@ -113,7 +122,14 @@ async function testWardenSpaces() {
     const history = await spacesManager.getExecutionHistory(10);
     console.log('   ✅ Execution history recorded');
     console.log('   📊 Total executions:', history.length);
-    console.log('   📋 Recent:', history.slice(0, 2).map(h => `${h.type} - ${h.status}`).join(', '), '\n');
+    console.log(
+      '   📋 Recent:',
+      history
+        .slice(0, 2)
+        .map((h) => `${h.type} - ${h.status}`)
+        .join(', '),
+      '\n',
+    );
 
     // Test 5: Enhanced AI Tools
     console.log('7️⃣ Testing Enhanced AI Tools...\n');
@@ -124,14 +140,21 @@ async function testWardenSpaces() {
 
     // Test Portfolio Analysis Tool
     console.log('   📊 Testing Portfolio Analysis Tool...');
-    const portfolioTool = createPortfolioAnalysisTool(priceFetcher, spacesManager);
+    const portfolioTool = createPortfolioAnalysisTool(
+      priceFetcher,
+      spacesManager,
+    );
     const portfolioResult = await portfolioTool.func({
       walletAddress: mockWallet,
     });
     const portfolioAnalysis = JSON.parse(portfolioResult);
     console.log('      ✅ Portfolio analyzed');
     console.log('      💰 Total value:', portfolioAnalysis.summary?.totalValue);
-    console.log('      📈 Risk level:', portfolioAnalysis.summary?.riskLevel, '\n');
+    console.log(
+      '      📈 Risk level:',
+      portfolioAnalysis.summary?.riskLevel,
+      '\n',
+    );
 
     // Test Market Insights Tool
     console.log('   📈 Testing Market Insights Tool...');
@@ -142,18 +165,33 @@ async function testWardenSpaces() {
     const marketInsights = JSON.parse(marketResult);
     console.log('      ✅ Market insights retrieved');
     console.log('      💵 Price:', marketInsights.price?.current);
-    console.log('      😊 Sentiment:', marketInsights.sentiment?.overall, marketInsights.sentiment?.emoji, '\n');
+    console.log(
+      '      😊 Sentiment:',
+      marketInsights.sentiment?.overall,
+      marketInsights.sentiment?.emoji,
+      '\n',
+    );
 
     // Test Trigger Recommendations Tool
     console.log('   💡 Testing Trigger Recommendations Tool...');
-    const recommendTool = createTriggerRecommendationsTool(priceFetcher, spacesManager);
+    const recommendTool = createTriggerRecommendationsTool(
+      priceFetcher,
+      spacesManager,
+    );
     const recommendResult = await recommendTool.func({
       walletAddress: mockWallet,
     });
     const recommendations = JSON.parse(recommendResult);
     console.log('      ✅ Recommendations generated');
-    console.log('      📊 Total recommendations:', recommendations.totalRecommendations);
-    console.log('      ⭐ Top priority:', recommendations.recommendations?.[0]?.action, '\n');
+    console.log(
+      '      📊 Total recommendations:',
+      recommendations.totalRecommendations,
+    );
+    console.log(
+      '      ⭐ Top priority:',
+      recommendations.recommendations?.[0]?.action,
+      '\n',
+    );
 
     // Test Execution History Tool
     console.log('   📋 Testing Execution History Tool...');
@@ -164,7 +202,10 @@ async function testWardenSpaces() {
     });
     const historyAnalysis = JSON.parse(historyResult);
     console.log('      ✅ History retrieved');
-    console.log('      📊 Total executions:', historyAnalysis.summary?.totalExecutions);
+    console.log(
+      '      📊 Total executions:',
+      historyAnalysis.summary?.totalExecutions,
+    );
     console.log('      ✅ Success rate:', historyAnalysis.summary?.successRate);
     console.log('      🔗 Storage:', historyAnalysis.storedOnChain, '\n');
 
@@ -224,4 +265,3 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 }
 
 export { testWardenSpaces };
-

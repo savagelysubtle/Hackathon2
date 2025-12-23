@@ -54,7 +54,9 @@ if (process.env.OPENAI_API_KEY) {
     );
   } catch (error) {
     console.error('❌ Invocation failed:', (error as Error).message);
-    console.error('This might be due to missing OpenAI API key or tool schema issues');
+    console.error(
+      'This might be due to missing OpenAI API key or tool schema issues',
+    );
   }
 } else {
   console.log('\n⚠️  Check 3: Skipped (no OPENAI_API_KEY)');
@@ -71,4 +73,3 @@ console.log('✅ Using Annotation for state management');
 console.log('✅ Using MemorySaver for checkpointing');
 console.log('✅ Graph compiles and exports correctly');
 console.log('\n✨ Your agent is READY for Warden Builder Program!\n');
-

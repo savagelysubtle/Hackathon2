@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { spaceManager } from "@/lib/warden-spaces";
+import { NextResponse } from 'next/server';
+import { spaceManager } from '@/lib/warden-spaces';
 
 /**
  * POST /api/spaces/create
@@ -11,8 +11,8 @@ export async function POST(request: Request) {
 
     if (!userAddress) {
       return NextResponse.json(
-        { error: "userAddress is required" },
-        { status: 400 }
+        { error: 'userAddress is required' },
+        { status: 400 },
       );
     }
 
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         success: true,
         space: existingSpace,
-        message: "Space already exists for this user",
+        message: 'Space already exists for this user',
       });
     }
 
@@ -38,10 +38,10 @@ export async function POST(request: Request) {
       depositInstructions,
     });
   } catch (error) {
-    console.error("Error creating Space:", error);
+    console.error('Error creating Space:', error);
     return NextResponse.json(
-      { error: "Failed to create Space", details: (error as Error).message },
-      { status: 500 }
+      { error: 'Failed to create Space', details: (error as Error).message },
+      { status: 500 },
     );
   }
 }
@@ -53,12 +53,12 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const userAddress = searchParams.get("userAddress");
+    const userAddress = searchParams.get('userAddress');
 
     if (!userAddress) {
       return NextResponse.json(
-        { error: "userAddress is required" },
-        { status: 400 }
+        { error: 'userAddress is required' },
+        { status: 400 },
       );
     }
 
@@ -66,8 +66,8 @@ export async function GET(request: Request) {
 
     if (!space) {
       return NextResponse.json(
-        { error: "Space not found", hasSpace: false },
-        { status: 404 }
+        { error: 'Space not found', hasSpace: false },
+        { status: 404 },
       );
     }
 
@@ -77,11 +77,10 @@ export async function GET(request: Request) {
       hasSpace: true,
     });
   } catch (error) {
-    console.error("Error fetching Space:", error);
+    console.error('Error fetching Space:', error);
     return NextResponse.json(
-      { error: "Failed to fetch Space" },
-      { status: 500 }
+      { error: 'Failed to fetch Space' },
+      { status: 500 },
     );
   }
 }
-

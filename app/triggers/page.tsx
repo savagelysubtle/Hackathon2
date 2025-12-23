@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -9,10 +9,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import {
   LineChart,
   Line,
@@ -21,7 +21,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from "recharts";
+} from 'recharts';
 import {
   Target,
   TrendingUp,
@@ -32,11 +32,11 @@ import {
   Pause,
   Play,
   RotateCcw,
-} from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { CreateTriggerModal } from "@/components/modals/create-trigger-modal";
-import { EditTriggerModal } from "@/components/modals/edit-trigger-modal";
-import { toast } from "sonner";
+} from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { CreateTriggerModal } from '@/components/modals/create-trigger-modal';
+import { EditTriggerModal } from '@/components/modals/edit-trigger-modal';
+import { toast } from 'sonner';
 
 interface Trigger {
   id: string;
@@ -45,7 +45,7 @@ interface Trigger {
   currentPrice?: number;
   thresholdPercentage: number;
   actionPercentage: number;
-  direction: "above" | "below";
+  direction: 'above' | 'below';
   isActive: boolean;
   progress?: number;
   lastChecked?: string;
@@ -53,18 +53,18 @@ interface Trigger {
 
 const priceHistory = {
   SOL: [
-    { time: "10:00", price: 200 },
-    { time: "12:00", price: 205 },
-    { time: "14:00", price: 210 },
-    { time: "16:00", price: 212 },
-    { time: "18:00", price: 215 },
+    { time: '10:00', price: 200 },
+    { time: '12:00', price: 205 },
+    { time: '14:00', price: 210 },
+    { time: '16:00', price: 212 },
+    { time: '18:00', price: 215 },
   ],
   ETH: [
-    { time: "10:00", price: 3500 },
-    { time: "12:00", price: 3550 },
-    { time: "14:00", price: 3600 },
-    { time: "16:00", price: 3650 },
-    { time: "18:00", price: 3675 },
+    { time: '10:00', price: 3500 },
+    { time: '12:00', price: 3550 },
+    { time: '14:00', price: 3600 },
+    { time: '16:00', price: 3650 },
+    { time: '18:00', price: 3675 },
   ],
 };
 
@@ -76,12 +76,12 @@ export default function TriggersPage() {
 
   const fetchTriggers = async () => {
     try {
-      const response = await fetch("/api/triggers");
-      if (!response.ok) throw new Error("Failed to fetch triggers");
+      const response = await fetch('/api/triggers');
+      if (!response.ok) throw new Error('Failed to fetch triggers');
       const data = await response.json();
       setTriggers(data.triggers);
     } catch (error: any) {
-      toast.error("Failed to load triggers", {
+      toast.error('Failed to load triggers', {
         description: error.message,
       });
     } finally {
@@ -99,13 +99,13 @@ export default function TriggersPage() {
   const handlePauseTrigger = async (id: string) => {
     try {
       const response = await fetch(`/api/triggers/${id}/pause`, {
-        method: "POST",
+        method: 'POST',
       });
-      if (!response.ok) throw new Error("Failed to pause trigger");
-      toast.success("Trigger paused");
+      if (!response.ok) throw new Error('Failed to pause trigger');
+      toast.success('Trigger paused');
       fetchTriggers();
     } catch (error: any) {
-      toast.error("Failed to pause trigger", {
+      toast.error('Failed to pause trigger', {
         description: error.message,
       });
     }
@@ -114,13 +114,13 @@ export default function TriggersPage() {
   const handleResumeTrigger = async (id: string) => {
     try {
       const response = await fetch(`/api/triggers/${id}/resume`, {
-        method: "POST",
+        method: 'POST',
       });
-      if (!response.ok) throw new Error("Failed to resume trigger");
-      toast.success("Trigger resumed");
+      if (!response.ok) throw new Error('Failed to resume trigger');
+      toast.success('Trigger resumed');
       fetchTriggers();
     } catch (error: any) {
-      toast.error("Failed to resume trigger", {
+      toast.error('Failed to resume trigger', {
         description: error.message,
       });
     }
@@ -129,13 +129,13 @@ export default function TriggersPage() {
   const handleResetTrigger = async (id: string) => {
     try {
       const response = await fetch(`/api/triggers/${id}/reset`, {
-        method: "POST",
+        method: 'POST',
       });
-      if (!response.ok) throw new Error("Failed to reset trigger");
-      toast.success("Trigger reset");
+      if (!response.ok) throw new Error('Failed to reset trigger');
+      toast.success('Trigger reset');
       fetchTriggers();
     } catch (error: any) {
-      toast.error("Failed to reset trigger", {
+      toast.error('Failed to reset trigger', {
         description: error.message,
       });
     }
@@ -194,10 +194,15 @@ export default function TriggersPage() {
           {/* Active Triggers */}
           <div className="grid gap-4">
             {triggers.map((trigger) => {
-              const currentPrice = trigger.currentPrice || trigger.baselinePrice;
+              const currentPrice =
+                trigger.currentPrice || trigger.baselinePrice;
               const percentageChange =
-                ((currentPrice - trigger.baselinePrice) / trigger.baselinePrice) * 100;
-              const progress = (Math.abs(percentageChange) / trigger.thresholdPercentage) * 100;
+                ((currentPrice - trigger.baselinePrice) /
+                  trigger.baselinePrice) *
+                100;
+              const progress =
+                (Math.abs(percentageChange) / trigger.thresholdPercentage) *
+                100;
               const isNearThreshold = progress > 80;
 
               return (
@@ -206,24 +211,26 @@ export default function TriggersPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-xl font-bold text-primary">
-                          {trigger.currencyPair.split("/")[0]}
+                          {trigger.currencyPair.split('/')[0]}
                         </div>
                         <div>
-                          <CardTitle>{trigger.currencyPair} Price Trigger</CardTitle>
+                          <CardTitle>
+                            {trigger.currencyPair} Price Trigger
+                          </CardTitle>
                           <p className="text-sm text-muted-foreground">
-                            {trigger.direction === "above" ? "Sell" : "Buy"}{" "}
-                            {trigger.actionPercentage}% at {trigger.direction}{" "}
+                            {trigger.direction === 'above' ? 'Sell' : 'Buy'}{' '}
+                            {trigger.actionPercentage}% at {trigger.direction}{' '}
                             {trigger.thresholdPercentage}%
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge
-                          variant={isNearThreshold ? "destructive" : "default"}
+                          variant={isNearThreshold ? 'destructive' : 'default'}
                           className="gap-1"
                         >
                           <Clock className="h-3 w-3" />
-                          {trigger.isActive ? "active" : "paused"}
+                          {trigger.isActive ? 'active' : 'paused'}
                         </Badge>
                         <Button
                           variant="outline"
@@ -238,13 +245,17 @@ export default function TriggersPage() {
                   <CardContent className="space-y-4">
                     <div className="grid gap-4 md:grid-cols-3">
                       <div>
-                        <div className="text-sm text-muted-foreground">Baseline Price</div>
+                        <div className="text-sm text-muted-foreground">
+                          Baseline Price
+                        </div>
                         <div className="text-2xl font-bold">
                           ${trigger.baselinePrice.toLocaleString()}
                         </div>
                       </div>
                       <div>
-                        <div className="text-sm text-muted-foreground">Current Price</div>
+                        <div className="text-sm text-muted-foreground">
+                          Current Price
+                        </div>
                         <div className="flex items-center gap-2">
                           <div className="text-2xl font-bold">
                             ${currentPrice.toLocaleString()}
@@ -252,7 +263,9 @@ export default function TriggersPage() {
                           <Badge
                             variant="outline"
                             className={
-                              percentageChange >= 0 ? "text-green-500" : "text-red-500"
+                              percentageChange >= 0
+                                ? 'text-green-500'
+                                : 'text-red-500'
                             }
                           >
                             <TrendingUp className="mr-1 h-3 w-3" />
@@ -261,7 +274,9 @@ export default function TriggersPage() {
                         </div>
                       </div>
                       <div>
-                        <div className="text-sm text-muted-foreground">Threshold</div>
+                        <div className="text-sm text-muted-foreground">
+                          Threshold
+                        </div>
                         <div className="text-2xl font-bold">
                           {trigger.thresholdPercentage}%
                         </div>
@@ -270,13 +285,20 @@ export default function TriggersPage() {
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Progress to threshold</span>
-                        <span className="font-medium">{progress.toFixed(1)}%</span>
+                        <span className="text-muted-foreground">
+                          Progress to threshold
+                        </span>
+                        <span className="font-medium">
+                          {progress.toFixed(1)}%
+                        </span>
                       </div>
-                      <Progress value={Math.min(progress, 100)} className="h-2" />
+                      <Progress
+                        value={Math.min(progress, 100)}
+                        className="h-2"
+                      />
                       <p className="text-xs text-muted-foreground">
                         {progress >= 100
-                          ? "Threshold reached! Trigger will execute."
+                          ? 'Threshold reached! Trigger will execute.'
                           : `${(trigger.thresholdPercentage - Math.abs(percentageChange)).toFixed(1)}% more to trigger`}
                       </p>
                     </div>
@@ -322,7 +344,9 @@ export default function TriggersPage() {
           {/* Price Charts */}
           <div className="grid gap-4 md:grid-cols-2">
             {triggers.slice(0, 2).map((trigger) => {
-              const asset = trigger.currencyPair.split("/")[0] as keyof typeof priceHistory;
+              const asset = trigger.currencyPair.split(
+                '/',
+              )[0] as keyof typeof priceHistory;
               if (!priceHistory[asset]) return null;
 
               return (
@@ -338,9 +362,9 @@ export default function TriggersPage() {
                         <YAxis stroke="#888" />
                         <Tooltip
                           contentStyle={{
-                            backgroundColor: "#1A1F2E",
-                            border: "1px solid #333",
-                            borderRadius: "8px",
+                            backgroundColor: '#1A1F2E',
+                            border: '1px solid #333',
+                            borderRadius: '8px',
                           }}
                         />
                         <Line
@@ -348,7 +372,7 @@ export default function TriggersPage() {
                           dataKey="price"
                           stroke="#3B82F6"
                           strokeWidth={2}
-                          dot={{ fill: "#3B82F6" }}
+                          dot={{ fill: '#3B82F6' }}
                         />
                       </LineChart>
                     </ResponsiveContainer>

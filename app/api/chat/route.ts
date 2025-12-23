@@ -9,24 +9,23 @@ export async function POST(request: NextRequest) {
     const { message, userApiKey, testMode } = await request.json();
 
     if (!message || typeof message !== 'string') {
-      return new Response(
-        JSON.stringify({ error: 'Message is required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'Message is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     // Test mode: Just validate the key format
     if (testMode) {
       if (userApiKey && userApiKey.startsWith('sk-')) {
-        return new Response(
-          JSON.stringify({ valid: true }),
-          { headers: { 'Content-Type': 'application/json' } }
-        );
+        return new Response(JSON.stringify({ valid: true }), {
+          headers: { 'Content-Type': 'application/json' },
+        });
       } else {
-        return new Response(
-          JSON.stringify({ valid: false }),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
+        return new Response(JSON.stringify({ valid: false }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        });
       }
     }
 
@@ -45,15 +44,20 @@ export async function POST(request: NextRequest) {
         async start(controller) {
           try {
             // Simulate delay
-            await new Promise(resolve => setTimeout(resolve, mockResponse.delay));
+            await new Promise((resolve) =>
+              setTimeout(resolve, mockResponse.delay),
+            );
 
             // Stream the mock response word by word
             const words = mockResponse.response.split(' ');
             for (const word of words) {
-              const data = JSON.stringify({ type: 'token', content: word + ' ' });
+              const data = JSON.stringify({
+                type: 'token',
+                content: word + ' ',
+              });
               controller.enqueue(encoder.encode(`data: ${data}\n\n`));
               // Small delay between words for typing effect
-              await new Promise(resolve => setTimeout(resolve, 30));
+              await new Promise((resolve) => setTimeout(resolve, 30));
             }
 
             // Send mode indicator and completion
@@ -63,7 +67,10 @@ export async function POST(request: NextRequest) {
             const completeData = JSON.stringify({ type: 'complete' });
             controller.enqueue(encoder.encode(`data: ${completeData}\n\n`));
           } catch (error: any) {
-            const errorData = JSON.stringify({ type: 'error', error: error.message });
+            const errorData = JSON.stringify({
+              type: 'error',
+              error: error.message,
+            });
             controller.enqueue(encoder.encode(`data: ${errorData}\n\n`));
           } finally {
             controller.close();
@@ -75,7 +82,7 @@ export async function POST(request: NextRequest) {
         headers: {
           'Content-Type': 'text/event-stream',
           'Cache-Control': 'no-cache, no-transform',
-          'Connection': 'keep-alive',
+          Connection: 'keep-alive',
         },
       });
     }
@@ -97,7 +104,7 @@ export async function POST(request: NextRequest) {
           // Send mode indicator
           const modeData = JSON.stringify({
             type: 'mode',
-            mode: hasUserKey ? 'full-user' : 'full-server'
+            mode: hasUserKey ? 'full-user' : 'full-server',
           });
           controller.enqueue(encoder.encode(`data: ${modeData}\n\n`));
 
@@ -105,7 +112,10 @@ export async function POST(request: NextRequest) {
           const completeData = JSON.stringify({ type: 'complete' });
           controller.enqueue(encoder.encode(`data: ${completeData}\n\n`));
         } catch (error: any) {
-          const errorData = JSON.stringify({ type: 'error', error: error.message });
+          const errorData = JSON.stringify({
+            type: 'error',
+            error: error.message,
+          });
           controller.enqueue(encoder.encode(`data: ${errorData}\n\n`));
         } finally {
           controller.close();
@@ -117,14 +127,13 @@ export async function POST(request: NextRequest) {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache, no-transform',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
       },
     });
   } catch (error: any) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
-

@@ -96,7 +96,10 @@ export class WardenSpacesManager {
         // Initialize state on-chain
         await this.saveState();
       } catch (error) {
-        console.warn('⚠️ Failed to create on-chain Space, using local storage:', (error as Error).message);
+        console.warn(
+          '⚠️ Failed to create on-chain Space, using local storage:',
+          (error as Error).message,
+        );
         this.useOnChain = false;
         this.spaceId = `local-space-${owner.slice(0, 8)}`;
       }
@@ -128,7 +131,10 @@ export class WardenSpacesManager {
         console.log('📖 Loading state from Warden Space:', this.spaceId);
         return this.localCache;
       } catch (error) {
-        console.warn('⚠️ Failed to load from on-chain Space:', (error as Error).message);
+        console.warn(
+          '⚠️ Failed to load from on-chain Space:',
+          (error as Error).message,
+        );
         return this.localCache;
       }
     }
@@ -152,10 +158,19 @@ export class WardenSpacesManager {
         // await this.agentkit.updateSpace(this.spaceId, this.localCache);
 
         console.log('💾 Saved state to Warden Space:', this.spaceId);
-        console.log('   - Triggers:', Object.keys(this.localCache.triggers).length);
-        console.log('   - Execution history:', this.localCache.executionHistory.length);
+        console.log(
+          '   - Triggers:',
+          Object.keys(this.localCache.triggers).length,
+        );
+        console.log(
+          '   - Execution history:',
+          this.localCache.executionHistory.length,
+        );
       } catch (error) {
-        console.warn('⚠️ Failed to save to on-chain Space:', (error as Error).message);
+        console.warn(
+          '⚠️ Failed to save to on-chain Space:',
+          (error as Error).message,
+        );
       }
     }
   }
@@ -190,7 +205,10 @@ export class WardenSpacesManager {
   /**
    * Update trigger status
    */
-  async updateTrigger(triggerId: string, updates: Partial<Trigger>): Promise<void> {
+  async updateTrigger(
+    triggerId: string,
+    updates: Partial<Trigger>,
+  ): Promise<void> {
     if (!this.localCache.triggers[triggerId]) {
       throw new Error(`Trigger ${triggerId} not found`);
     }
@@ -222,7 +240,9 @@ export class WardenSpacesManager {
   /**
    * Update portfolio configuration
    */
-  async updatePortfolioConfig(config: Partial<SpaceState['portfolioConfig']>): Promise<void> {
+  async updatePortfolioConfig(
+    config: Partial<SpaceState['portfolioConfig']>,
+  ): Promise<void> {
     this.localCache.portfolioConfig = {
       ...this.localCache.portfolioConfig,
       ...config,
@@ -245,7 +265,9 @@ export class WardenSpacesManager {
   /**
    * Record an execution to history
    */
-  async recordExecution(record: Omit<ExecutionRecord, 'id' | 'timestamp'>): Promise<void> {
+  async recordExecution(
+    record: Omit<ExecutionRecord, 'id' | 'timestamp'>,
+  ): Promise<void> {
     const executionRecord: ExecutionRecord = {
       id: `exec-${Date.now()}`,
       timestamp: new Date().toISOString(),
@@ -256,7 +278,8 @@ export class WardenSpacesManager {
 
     // Keep only last 100 records
     if (this.localCache.executionHistory.length > 100) {
-      this.localCache.executionHistory = this.localCache.executionHistory.slice(-100);
+      this.localCache.executionHistory =
+        this.localCache.executionHistory.slice(-100);
     }
 
     await this.saveState();
@@ -319,11 +342,10 @@ let spacesManagerInstance: WardenSpacesManager | undefined;
 
 export function getSpacesManager(
   agentkit: WardenAgentKit,
-  options?: { useOnChain?: boolean }
+  options?: { useOnChain?: boolean },
 ): WardenSpacesManager {
   if (!spacesManagerInstance) {
     spacesManagerInstance = new WardenSpacesManager(agentkit, options);
   }
   return spacesManagerInstance;
 }
-

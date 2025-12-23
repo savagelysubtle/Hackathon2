@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { spaceManager } from "@/lib/warden-spaces";
+import { NextResponse } from 'next/server';
+import { spaceManager } from '@/lib/warden-spaces';
 
 /**
  * GET /api/spaces/balance?spaceId=space_123
@@ -8,12 +8,12 @@ import { spaceManager } from "@/lib/warden-spaces";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const spaceId = searchParams.get("spaceId");
+    const spaceId = searchParams.get('spaceId');
 
     if (!spaceId) {
       return NextResponse.json(
-        { error: "spaceId is required" },
-        { status: 400 }
+        { error: 'spaceId is required' },
+        { status: 400 },
       );
     }
 
@@ -25,11 +25,10 @@ export async function GET(request: Request) {
       balances,
     });
   } catch (error) {
-    console.error("Error fetching Space balance:", error);
+    console.error('Error fetching Space balance:', error);
     return NextResponse.json(
-      { error: "Failed to fetch Space balance" },
-      { status: 500 }
+      { error: 'Failed to fetch Space balance' },
+      { status: 500 },
     );
   }
 }
-

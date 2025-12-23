@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
-import { toast } from "sonner";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
-import { useWalletBalances } from "@/hooks/useWalletBalances";
-import { usePrices } from "@/hooks/usePrices";
+import { useState, useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { RefreshCw } from 'lucide-react';
+import { toast } from 'sonner';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount } from 'wagmi';
+import { useWalletBalances } from '@/hooks/useWalletBalances';
+import { usePrices } from '@/hooks/usePrices';
 import {
   Table,
   TableBody,
@@ -16,9 +16,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/table';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 import {
   LineChart,
   Line,
@@ -31,8 +31,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-} from "recharts";
-import { TrendingUp, TrendingDown } from "lucide-react";
+} from 'recharts';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
 export default function PortfolioPage() {
   const { address, isConnected } = useAccount();
@@ -43,10 +43,10 @@ export default function PortfolioPage() {
 
   // Get prices
   const { data: prices, isLoading: pricesLoading } = usePrices([
-    "ETH/USD",
-    "USDC/USD",
-    "USDT/USD",
-    "DAI/USD",
+    'ETH/USD',
+    'USDC/USD',
+    'USDT/USD',
+    'DAI/USD',
   ]);
 
   // Calculate portfolio values
@@ -61,7 +61,7 @@ export default function PortfolioPage() {
 
     // Calculate ETH value
     const ethAmount = parseFloat(balances.eth.amount);
-    const ethPrice = prices["ETH/USD"] || 0;
+    const ethPrice = prices['ETH/USD'] || 0;
     const ethValue = ethAmount * ethPrice;
 
     // Calculate token values
@@ -76,19 +76,20 @@ export default function PortfolioPage() {
       };
     });
 
-    const totalValue = ethValue + tokenValues.reduce((sum, t) => sum + t.value, 0);
+    const totalValue =
+      ethValue + tokenValues.reduce((sum, t) => sum + t.value, 0);
 
     // Create assets array
     const assets = [
       {
-        name: "Ethereum",
-        symbol: "ETH",
+        name: 'Ethereum',
+        symbol: 'ETH',
         holdings: ethAmount.toFixed(4),
         price: `$${ethPrice.toFixed(2)}`,
         value: `$${ethValue.toFixed(2)}`,
         percentage: totalValue > 0 ? (ethValue / totalValue) * 100 : 0,
-        change24h: "+2.5%",
-        trend: "up",
+        change24h: '+2.5%',
+        trend: 'up',
       },
       ...tokenValues.map((token) => ({
         name: token.symbol,
@@ -97,8 +98,8 @@ export default function PortfolioPage() {
         price: `$${token.price.toFixed(2)}`,
         value: `$${token.value.toFixed(2)}`,
         percentage: totalValue > 0 ? (token.value / totalValue) * 100 : 0,
-        change24h: "0.0%",
-        trend: "neutral",
+        change24h: '0.0%',
+        trend: 'neutral',
       })),
     ];
 
@@ -108,7 +109,7 @@ export default function PortfolioPage() {
       .map((asset, index) => ({
         name: asset.symbol,
         value: asset.percentage,
-        color: index === 0 ? "#3B82F6" : index === 1 ? "#10B981" : "#F59E0B",
+        color: index === 0 ? '#3B82F6' : index === 1 ? '#10B981' : '#F59E0B',
         target: asset.percentage, // Mock target
       }));
 
@@ -121,30 +122,30 @@ export default function PortfolioPage() {
 
   const handleRebalanceNow = async () => {
     if (!address) {
-      toast.error("Please connect your wallet");
+      toast.error('Please connect your wallet');
       return;
     }
 
     setIsRebalancing(true);
 
     try {
-      const response = await fetch("/api/portfolio/rebalance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/portfolio/rebalance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userAddress: address }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to rebalance portfolio");
+        throw new Error('Failed to rebalance portfolio');
       }
 
       const result = await response.json();
 
-      toast.success("Portfolio rebalanced successfully!", {
+      toast.success('Portfolio rebalanced successfully!', {
         description: `${result.swaps.length} swap(s) prepared. TX: ${result.txHash?.substring(0, 10)}...`,
       });
     } catch (error: any) {
-      toast.error("Failed to rebalance portfolio", {
+      toast.error('Failed to rebalance portfolio', {
         description: error.message,
       });
     } finally {
@@ -162,7 +163,8 @@ export default function PortfolioPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground text-center">
-              Connect your wallet to view your real portfolio balances and start automating.
+              Connect your wallet to view your real portfolio balances and start
+              automating.
             </p>
             <div className="flex justify-center">
               <ConnectButton />
@@ -187,32 +189,28 @@ export default function PortfolioPage() {
 
   const drift = 0.5; // Current drift percentage (mock)
   const portfolioHistory = [
-    { date: "Nov 10", value: portfolioData.totalValue * 0.96 },
-    { date: "Nov 11", value: portfolioData.totalValue * 0.97 },
-    { date: "Nov 12", value: portfolioData.totalValue * 0.98 },
-    { date: "Nov 13", value: portfolioData.totalValue * 0.99 },
-    { date: "Nov 14", value: portfolioData.totalValue * 0.984 },
-    { date: "Nov 15", value: portfolioData.totalValue },
+    { date: 'Nov 10', value: portfolioData.totalValue * 0.96 },
+    { date: 'Nov 11', value: portfolioData.totalValue * 0.97 },
+    { date: 'Nov 12', value: portfolioData.totalValue * 0.98 },
+    { date: 'Nov 13', value: portfolioData.totalValue * 0.99 },
+    { date: 'Nov 14', value: portfolioData.totalValue * 0.984 },
+    { date: 'Nov 15', value: portfolioData.totalValue },
   ];
 
   const rebalanceHistory = [
     {
-      date: "2025-11-14",
-      time: "10:00 AM",
-      action: "Rebalanced",
-      drift: "6.2%",
-      swaps: [
-        { from: "USDC", to: "ETH", amount: "$2,500" },
-      ],
+      date: '2025-11-14',
+      time: '10:00 AM',
+      action: 'Rebalanced',
+      drift: '6.2%',
+      swaps: [{ from: 'USDC', to: 'ETH', amount: '$2,500' }],
     },
     {
-      date: "2025-11-07",
-      time: "10:00 AM",
-      action: "Rebalanced",
-      drift: "5.8%",
-      swaps: [
-        { from: "ETH", to: "USDC", amount: "$3,200" },
-      ],
+      date: '2025-11-07',
+      time: '10:00 AM',
+      action: 'Rebalanced',
+      drift: '5.8%',
+      swaps: [{ from: 'ETH', to: 'USDC', amount: '$3,200' }],
     },
   ];
 
@@ -231,8 +229,10 @@ export default function PortfolioPage() {
           size="lg"
           className="gap-2"
         >
-          <RefreshCw className={`h-4 w-4 ${isRebalancing ? "animate-spin" : ""}`} />
-          {isRebalancing ? "Rebalancing..." : "Rebalance Now"}
+          <RefreshCw
+            className={`h-4 w-4 ${isRebalancing ? 'animate-spin' : ''}`}
+          />
+          {isRebalancing ? 'Rebalancing...' : 'Rebalance Now'}
         </Button>
       </div>
 
@@ -248,7 +248,7 @@ export default function PortfolioPage() {
           <p className="text-sm text-muted-foreground mt-1">
             Last updated: {new Date().toLocaleString()}
           </p>
-          
+
           {/* Debug info - show raw balances */}
           {portfolioData.totalValue === 0 && (
             <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
@@ -281,7 +281,9 @@ export default function PortfolioPage() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={(entry) => `${entry.name}: ${entry.value.toFixed(1)}%`}
+                    label={(entry) =>
+                      `${entry.name}: ${entry.value.toFixed(1)}%`
+                    }
                     outerRadius={100}
                     fill="#8884d8"
                     dataKey="value"
@@ -310,7 +312,7 @@ export default function PortfolioPage() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">Current Drift</span>
-                <Badge variant={drift > 5 ? "destructive" : "default"}>
+                <Badge variant={drift > 5 ? 'destructive' : 'default'}>
                   {drift}%
                 </Badge>
               </div>
@@ -355,20 +357,29 @@ export default function PortfolioPage() {
           <CardTitle>Asset Breakdown</CardTitle>
         </CardHeader>
         <CardContent>
-          {portfolioData.assets.length === 0 || portfolioData.totalValue === 0 ? (
+          {portfolioData.assets.length === 0 ||
+          portfolioData.totalValue === 0 ? (
             <div className="text-center py-12 space-y-4">
               <div className="text-muted-foreground">
                 <p className="text-lg font-medium">No Assets Found</p>
                 <p className="text-sm mt-2">
-                  Your connected wallet doesn't hold any of the tracked assets (ETH, USDC, USDT, DAI) on Ethereum Mainnet.
+                  Your connected wallet doesn't hold any of the tracked assets
+                  (ETH, USDC, USDT, DAI) on Ethereum Mainnet.
                 </p>
               </div>
               <div className="bg-muted/50 rounded-lg p-4 max-w-md mx-auto text-left">
                 <p className="text-sm font-medium mb-2">💡 Possible Reasons:</p>
                 <ul className="text-xs space-y-1 text-muted-foreground list-disc list-inside">
-                  <li>Wallet is on a different network (try switching to Ethereum Mainnet)</li>
-                  <li>Wallet has zero balance or very small amounts (&lt; $0.01)</li>
-                  <li>Token contracts might not be responding (check network)</li>
+                  <li>
+                    Wallet is on a different network (try switching to Ethereum
+                    Mainnet)
+                  </li>
+                  <li>
+                    Wallet has zero balance or very small amounts (&lt; $0.01)
+                  </li>
+                  <li>
+                    Token contracts might not be responding (check network)
+                  </li>
                 </ul>
               </div>
             </div>
@@ -386,53 +397,55 @@ export default function PortfolioPage() {
               </TableHeader>
               <TableBody>
                 {portfolioData.assets.map((asset) => (
-                <TableRow key={asset.symbol}>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
-                        {asset.symbol.charAt(0)}
-                      </div>
-                      <div>
-                        <div className="font-medium">{asset.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {asset.symbol}
+                  <TableRow key={asset.symbol}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
+                          {asset.symbol.charAt(0)}
+                        </div>
+                        <div>
+                          <div className="font-medium">{asset.name}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {asset.symbol}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {asset.holdings}
-                  </TableCell>
-                  <TableCell className="text-right">{asset.price}</TableCell>
-                  <TableCell className="text-right font-medium">
-                    {asset.value}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Badge variant="outline">{asset.percentage.toFixed(1)}%</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      {asset.trend === "up" && (
-                        <TrendingUp className="h-4 w-4 text-green-500" />
-                      )}
-                      {asset.trend === "down" && (
-                        <TrendingDown className="h-4 w-4 text-red-500" />
-                      )}
-                      <span
-                        className={
-                          asset.trend === "up"
-                            ? "text-green-500"
-                            : asset.trend === "down"
-                            ? "text-red-500"
-                            : "text-muted-foreground"
-                        }
-                      >
-                        {asset.change24h}
-                      </span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {asset.holdings}
+                    </TableCell>
+                    <TableCell className="text-right">{asset.price}</TableCell>
+                    <TableCell className="text-right font-medium">
+                      {asset.value}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge variant="outline">
+                        {asset.percentage.toFixed(1)}%
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        {asset.trend === 'up' && (
+                          <TrendingUp className="h-4 w-4 text-green-500" />
+                        )}
+                        {asset.trend === 'down' && (
+                          <TrendingDown className="h-4 w-4 text-red-500" />
+                        )}
+                        <span
+                          className={
+                            asset.trend === 'up'
+                              ? 'text-green-500'
+                              : asset.trend === 'down'
+                                ? 'text-red-500'
+                                : 'text-muted-foreground'
+                          }
+                        >
+                          {asset.change24h}
+                        </span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           )}
@@ -452,9 +465,9 @@ export default function PortfolioPage() {
               <YAxis stroke="#888" />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "#1A1F2E",
-                  border: "1px solid #333",
-                  borderRadius: "8px",
+                  backgroundColor: '#1A1F2E',
+                  border: '1px solid #333',
+                  borderRadius: '8px',
                 }}
               />
               <Line
@@ -462,7 +475,7 @@ export default function PortfolioPage() {
                 dataKey="value"
                 stroke="#3B82F6"
                 strokeWidth={2}
-                dot={{ fill: "#3B82F6" }}
+                dot={{ fill: '#3B82F6' }}
               />
             </LineChart>
           </ResponsiveContainer>

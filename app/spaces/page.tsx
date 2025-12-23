@@ -2,7 +2,13 @@
 
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { CreateSpaceButton } from '@/components/spaces/create-space-button';
 import { Badge } from '@/components/ui/badge';
 import { Zap, Shield, History, Users } from 'lucide-react';
@@ -24,7 +30,8 @@ export default function SpacePage() {
         <CardHeader>
           <CardTitle>What is a Warden Space?</CardTitle>
           <CardDescription>
-            A Space is an on-chain smart account that allows your agent to execute transactions automatically
+            A Space is an on-chain smart account that allows your agent to
+            execute transactions automatically
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -84,7 +91,9 @@ export default function SpacePage() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <Badge className="w-fit" variant="outline">Option 1</Badge>
+            <Badge className="w-fit" variant="outline">
+              Option 1
+            </Badge>
             <CardTitle className="mt-2">Wallet Connect</CardTitle>
             <CardDescription>
               Standard Web3 approach - approve each transaction
@@ -167,4 +176,3 @@ export default function SpacePage() {
     </div>
   );
 }
-

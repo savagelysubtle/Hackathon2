@@ -1,7 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   LineChart,
@@ -121,8 +127,20 @@ const triggerStats = [
 ];
 
 const assetPerformance = [
-  { asset: 'ETH', return: '+12.5%', value: '$3,750', allocation: '65%', color: '#627EEA' },
-  { asset: 'USDC', return: '+0.0%', value: '$2,000', allocation: '35%', color: '#26A17B' },
+  {
+    asset: 'ETH',
+    return: '+12.5%',
+    value: '$3,750',
+    allocation: '65%',
+    color: '#627EEA',
+  },
+  {
+    asset: 'USDC',
+    return: '+0.0%',
+    value: '$2,000',
+    allocation: '35%',
+    color: '#26A17B',
+  },
 ];
 
 const allocationData = [
@@ -131,7 +149,9 @@ const allocationData = [
 ];
 
 export default function AnalyticsPage() {
-  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('7d');
+  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>(
+    '7d',
+  );
   const [loading, setLoading] = useState(false);
 
   // Calculate summary stats
@@ -139,8 +159,15 @@ export default function AnalyticsPage() {
   const change24h = +3.5;
   const changeValue = 201.25;
   const totalRebalances = rebalanceHistory.length;
-  const totalTriggerExecutions = triggerStats.reduce((sum, t) => sum + t.executions, 0);
-  const avgRebalanceValue = rebalanceHistory.reduce((sum, r) => sum + parseFloat(r.value.replace(/[$,]/g, '')), 0) / totalRebalances;
+  const totalTriggerExecutions = triggerStats.reduce(
+    (sum, t) => sum + t.executions,
+    0,
+  );
+  const avgRebalanceValue =
+    rebalanceHistory.reduce(
+      (sum, r) => sum + parseFloat(r.value.replace(/[$,]/g, '')),
+      0,
+    ) / totalRebalances;
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -148,7 +175,8 @@ export default function AnalyticsPage() {
       <div>
         <h1 className="text-3xl font-bold">Portfolio Analytics</h1>
         <p className="text-muted-foreground">
-          Comprehensive insights into your portfolio performance and automation effectiveness
+          Comprehensive insights into your portfolio performance and automation
+          effectiveness
         </p>
       </div>
 
@@ -156,21 +184,29 @@ export default function AnalyticsPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Portfolio Value</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Portfolio Value
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalValue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">
+              ${totalValue.toLocaleString()}
+            </div>
             <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
               {change24h > 0 ? (
                 <>
                   <TrendingUp className="h-3 w-3 text-green-500" />
-                  <span className="text-green-500">+${changeValue.toFixed(2)} (+{change24h}%)</span>
+                  <span className="text-green-500">
+                    +${changeValue.toFixed(2)} (+{change24h}%)
+                  </span>
                 </>
               ) : (
                 <>
                   <TrendingDown className="h-3 w-3 text-red-500" />
-                  <span className="text-red-500">-${Math.abs(changeValue).toFixed(2)} ({change24h}%)</span>
+                  <span className="text-red-500">
+                    -${Math.abs(changeValue).toFixed(2)} ({change24h}%)
+                  </span>
                 </>
               )}
               <span className="ml-1">24h</span>
@@ -180,7 +216,9 @@ export default function AnalyticsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Rebalances</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Rebalances
+            </CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -193,7 +231,9 @@ export default function AnalyticsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Trigger Executions</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Trigger Executions
+            </CardTitle>
             <Zap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -206,7 +246,9 @@ export default function AnalyticsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Best Performer</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Best Performer
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -230,7 +272,9 @@ export default function AnalyticsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Portfolio Value Over Time</CardTitle>
-              <CardDescription>Track your portfolio's total value and composition</CardDescription>
+              <CardDescription>
+                Track your portfolio's total value and composition
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -273,8 +317,22 @@ export default function AnalyticsPage() {
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Area type="monotone" dataKey="eth" stackId="1" stroke="#627EEA" fill="#627EEA" name="ETH ($)" />
-                    <Area type="monotone" dataKey="usdc" stackId="1" stroke="#26A17B" fill="#26A17B" name="USDC ($)" />
+                    <Area
+                      type="monotone"
+                      dataKey="eth"
+                      stackId="1"
+                      stroke="#627EEA"
+                      fill="#627EEA"
+                      name="ETH ($)"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="usdc"
+                      stackId="1"
+                      stroke="#26A17B"
+                      fill="#26A17B"
+                      name="USDC ($)"
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -288,17 +346,27 @@ export default function AnalyticsPage() {
               <CardContent>
                 <div className="space-y-4">
                   {assetPerformance.map((asset) => (
-                    <div key={asset.asset} className="flex items-center justify-between">
+                    <div
+                      key={asset.asset}
+                      className="flex items-center justify-between"
+                    >
                       <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: asset.color }} />
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: asset.color }}
+                        />
                         <div>
                           <p className="font-medium">{asset.asset}</p>
-                          <p className="text-sm text-muted-foreground">{asset.allocation} allocation</p>
+                          <p className="text-sm text-muted-foreground">
+                            {asset.allocation} allocation
+                          </p>
                         </div>
                       </div>
                       <div className="text-right">
                         <p className="font-bold">{asset.value}</p>
-                        <p className={`text-sm ${asset.return.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>
+                        <p
+                          className={`text-sm ${asset.return.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}
+                        >
                           {asset.return}
                         </p>
                       </div>
@@ -315,7 +383,9 @@ export default function AnalyticsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Rebalance History</CardTitle>
-              <CardDescription>All portfolio rebalancing operations</CardDescription>
+              <CardDescription>
+                All portfolio rebalancing operations
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -334,7 +404,9 @@ export default function AnalyticsPage() {
                         <p className="font-medium">
                           {rebalance.amount} {rebalance.from} → {rebalance.to}
                         </p>
-                        <p className="text-sm text-muted-foreground">{rebalance.reason}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {rebalance.reason}
+                        </p>
                         <p className="text-xs text-muted-foreground mt-1">
                           {rebalance.date} at {rebalance.time}
                         </p>
@@ -360,7 +432,9 @@ export default function AnalyticsPage() {
           <div className="grid gap-4 md:grid-cols-3">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Success Rate
+                </CardTitle>
                 <CheckCircle2 className="h-4 w-4 text-green-500" />
               </CardHeader>
               <CardContent>
@@ -373,25 +447,40 @@ export default function AnalyticsPage() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Avg Duration</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Avg Duration
+                </CardTitle>
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">2.3s</div>
-                <p className="text-xs text-muted-foreground mt-1">Lightning fast</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Lightning fast
+                </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Volume</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total Volume
+                </CardTitle>
                 <Activity className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  ${rebalanceHistory.reduce((sum, r) => sum + parseFloat(r.value.replace(/[$,]/g, '')), 0).toFixed(0)}
+                  $
+                  {rebalanceHistory
+                    .reduce(
+                      (sum, r) =>
+                        sum + parseFloat(r.value.replace(/[$,]/g, '')),
+                      0,
+                    )
+                    .toFixed(0)}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">Across {totalRebalances} rebalances</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Across {totalRebalances} rebalances
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -402,7 +491,9 @@ export default function AnalyticsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Trigger Effectiveness</CardTitle>
-              <CardDescription>Performance metrics for price-based triggers</CardDescription>
+              <CardDescription>
+                Performance metrics for price-based triggers
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -420,13 +511,18 @@ export default function AnalyticsPage() {
                           {trigger.asset} - {trigger.condition}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {trigger.executions} executions • {trigger.successRate}% success
+                          {trigger.executions} executions •{' '}
+                          {trigger.successRate}% success
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-green-500">{trigger.totalProfit}</p>
-                      <p className="text-xs text-muted-foreground">{trigger.avgProfit} avg</p>
+                      <p className="font-bold text-green-500">
+                        {trigger.totalProfit}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {trigger.avgProfit} avg
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -460,7 +556,9 @@ export default function AnalyticsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Current Allocation</CardTitle>
-                <CardDescription>Portfolio distribution by asset</CardDescription>
+                <CardDescription>
+                  Portfolio distribution by asset
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -495,23 +593,37 @@ export default function AnalyticsPage() {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium">ETH</span>
-                      <span className="text-sm text-muted-foreground">65% (Target: 60%)</span>
+                      <span className="text-sm text-muted-foreground">
+                        65% (Target: 60%)
+                      </span>
                     </div>
                     <div className="w-full bg-secondary rounded-full h-2">
-                      <div className="bg-[#627EEA] h-2 rounded-full" style={{ width: '65%' }} />
+                      <div
+                        className="bg-[#627EEA] h-2 rounded-full"
+                        style={{ width: '65%' }}
+                      />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">Drift: +5% (within threshold)</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Drift: +5% (within threshold)
+                    </p>
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium">USDC</span>
-                      <span className="text-sm text-muted-foreground">35% (Target: 40%)</span>
+                      <span className="text-sm text-muted-foreground">
+                        35% (Target: 40%)
+                      </span>
                     </div>
                     <div className="w-full bg-secondary rounded-full h-2">
-                      <div className="bg-[#26A17B] h-2 rounded-full" style={{ width: '35%' }} />
+                      <div
+                        className="bg-[#26A17B] h-2 rounded-full"
+                        style={{ width: '35%' }}
+                      />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">Drift: -5% (within threshold)</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Drift: -5% (within threshold)
+                    </p>
                   </div>
                 </div>
 
@@ -521,7 +633,8 @@ export default function AnalyticsPage() {
                     <div>
                       <p className="font-medium text-sm">Rebalancing Status</p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Portfolio is within 5% drift threshold. Next scheduled rebalance: Sunday, 10:00 AM.
+                        Portfolio is within 5% drift threshold. Next scheduled
+                        rebalance: Sunday, 10:00 AM.
                       </p>
                     </div>
                   </div>
@@ -539,7 +652,8 @@ export default function AnalyticsPage() {
           <div>
             <p className="font-medium">Analytics Data Stored on Warden Chain</p>
             <p className="text-sm text-muted-foreground">
-              All performance metrics and execution history are persisted on-chain for transparency and auditability.
+              All performance metrics and execution history are persisted
+              on-chain for transparency and auditability.
             </p>
           </div>
         </CardContent>
@@ -547,4 +661,3 @@ export default function AnalyticsPage() {
     </div>
   );
 }
-

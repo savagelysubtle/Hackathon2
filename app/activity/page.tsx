@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -11,7 +11,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   CheckCircle2,
   XCircle,
@@ -21,93 +21,93 @@ import {
   HeartPulse,
   ExternalLink,
   Filter,
-} from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+} from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 // Mock data
 const activities = [
   {
-    id: "1",
+    id: '1',
     timestamp: new Date(2025, 10, 15, 11, 55, 0),
-    type: "trigger",
-    action: "Price Trigger Check",
-    status: "success",
-    details: "SOL trigger checked: 7.5% from threshold",
-    txHash: "0x1234...5678",
-    duration: "2.1s",
+    type: 'trigger',
+    action: 'Price Trigger Check',
+    status: 'success',
+    details: 'SOL trigger checked: 7.5% from threshold',
+    txHash: '0x1234...5678',
+    duration: '2.1s',
   },
   {
-    id: "2",
+    id: '2',
     timestamp: new Date(2025, 10, 15, 11, 45, 0),
-    type: "swap",
-    action: "Swap Executed",
-    status: "success",
-    details: "Swapped $2,500 USDC → ETH (1.2 ETH)",
-    txHash: "0xabcd...efgh",
-    duration: "45.3s",
+    type: 'swap',
+    action: 'Swap Executed',
+    status: 'success',
+    details: 'Swapped $2,500 USDC → ETH (1.2 ETH)',
+    txHash: '0xabcd...efgh',
+    duration: '45.3s',
     volume: 2500,
   },
   {
-    id: "3",
+    id: '3',
     timestamp: new Date(2025, 10, 14, 10, 0, 0),
-    type: "rebalance",
-    action: "Portfolio Rebalanced",
-    status: "success",
-    details: "Drift exceeded 5%, rebalanced to target allocation",
-    txHash: "0x9876...5432",
-    duration: "43.2s",
+    type: 'rebalance',
+    action: 'Portfolio Rebalanced',
+    status: 'success',
+    details: 'Drift exceeded 5%, rebalanced to target allocation',
+    txHash: '0x9876...5432',
+    duration: '43.2s',
     volume: 3200,
   },
   {
-    id: "4",
+    id: '4',
     timestamp: new Date(2025, 10, 15, 0, 0, 0),
-    type: "health",
-    action: "Health Check",
-    status: "success",
-    details: "All systems operational, balances verified",
-    duration: "11.5s",
+    type: 'health',
+    action: 'Health Check',
+    status: 'success',
+    details: 'All systems operational, balances verified',
+    duration: '11.5s',
   },
   {
-    id: "5",
+    id: '5',
     timestamp: new Date(2025, 10, 14, 14, 30, 0),
-    type: "trigger",
-    action: "SOL Trigger Executed",
-    status: "success",
-    details: "SOL pumped 15%, sold 10% as configured",
-    txHash: "0xdef0...1234",
-    duration: "38.7s",
+    type: 'trigger',
+    action: 'SOL Trigger Executed',
+    status: 'success',
+    details: 'SOL pumped 15%, sold 10% as configured',
+    txHash: '0xdef0...1234',
+    duration: '38.7s',
     volume: 2300,
   },
   {
-    id: "6",
+    id: '6',
     timestamp: new Date(2025, 10, 13, 10, 0, 0),
-    type: "rebalance",
-    action: "Portfolio Rebalanced",
-    status: "success",
-    details: "Weekly rebalance completed",
-    txHash: "0x5678...abcd",
-    duration: "41.8s",
+    type: 'rebalance',
+    action: 'Portfolio Rebalanced',
+    status: 'success',
+    details: 'Weekly rebalance completed',
+    txHash: '0x5678...abcd',
+    duration: '41.8s',
     volume: 1800,
   },
 ];
 
 const activityTypes = [
-  { value: "all", label: "All Types" },
-  { value: "swap", label: "Swaps" },
-  { value: "rebalance", label: "Rebalances" },
-  { value: "trigger", label: "Triggers" },
-  { value: "health", label: "Health Checks" },
+  { value: 'all', label: 'All Types' },
+  { value: 'swap', label: 'Swaps' },
+  { value: 'rebalance', label: 'Rebalances' },
+  { value: 'trigger', label: 'Triggers' },
+  { value: 'health', label: 'Health Checks' },
 ];
 
 const getActivityIcon = (type: string) => {
   switch (type) {
-    case "swap":
+    case 'swap':
       return ArrowLeftRight;
-    case "rebalance":
+    case 'rebalance':
       return RefreshCw;
-    case "trigger":
+    case 'trigger':
       return Target;
-    case "health":
+    case 'health':
       return HeartPulse;
     default:
       return CheckCircle2;
@@ -116,27 +116,27 @@ const getActivityIcon = (type: string) => {
 
 const getActivityColor = (type: string) => {
   switch (type) {
-    case "swap":
-      return "text-blue-500";
-    case "rebalance":
-      return "text-purple-500";
-    case "trigger":
-      return "text-green-500";
-    case "health":
-      return "text-orange-500";
+    case 'swap':
+      return 'text-blue-500';
+    case 'rebalance':
+      return 'text-purple-500';
+    case 'trigger':
+      return 'text-green-500';
+    case 'health':
+      return 'text-orange-500';
     default:
-      return "text-gray-500";
+      return 'text-gray-500';
   }
 };
 
 export default function ActivityPage() {
-  const [filter, setFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [filter, setFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const filteredActivities = activities.filter((activity) => {
-    const typeMatch = filter === "all" || activity.type === filter;
+    const typeMatch = filter === 'all' || activity.type === filter;
     const statusMatch =
-      statusFilter === "all" || activity.status === statusFilter;
+      statusFilter === 'all' || activity.status === statusFilter;
     return typeMatch && statusMatch;
   });
 
@@ -145,7 +145,7 @@ export default function ActivityPage() {
     .reduce((sum, a) => sum + (a.volume || 0), 0);
 
   const successRate =
-    (activities.filter((a) => a.status === "success").length /
+    (activities.filter((a) => a.status === 'success').length /
       activities.length) *
     100;
 
@@ -169,9 +169,7 @@ export default function ActivityPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Actions
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Total Actions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -193,9 +191,7 @@ export default function ActivityPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Volume
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Total Volume</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -215,7 +211,7 @@ export default function ActivityPage() {
               {activityTypes.map((type) => (
                 <Button
                   key={type.value}
-                  variant={filter === type.value ? "default" : "outline"}
+                  variant={filter === type.value ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setFilter(type.value)}
                 >
@@ -226,23 +222,23 @@ export default function ActivityPage() {
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Status:</span>
               <Button
-                variant={statusFilter === "all" ? "default" : "outline"}
+                variant={statusFilter === 'all' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setStatusFilter("all")}
+                onClick={() => setStatusFilter('all')}
               >
                 All
               </Button>
               <Button
-                variant={statusFilter === "success" ? "default" : "outline"}
+                variant={statusFilter === 'success' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setStatusFilter("success")}
+                onClick={() => setStatusFilter('success')}
               >
                 Success
               </Button>
               <Button
-                variant={statusFilter === "failed" ? "default" : "outline"}
+                variant={statusFilter === 'failed' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setStatusFilter("failed")}
+                onClick={() => setStatusFilter('failed')}
               >
                 Failed
               </Button>
@@ -279,13 +275,13 @@ export default function ActivityPage() {
                           <span className="font-medium">{activity.action}</span>
                           <Badge
                             variant={
-                              activity.status === "success"
-                                ? "default"
-                                : "destructive"
+                              activity.status === 'success'
+                                ? 'default'
+                                : 'destructive'
                             }
                             className="gap-1"
                           >
-                            {activity.status === "success" ? (
+                            {activity.status === 'success' ? (
                               <CheckCircle2 className="h-3 w-3" />
                             ) : (
                               <XCircle className="h-3 w-3" />
@@ -365,15 +361,19 @@ export default function ActivityPage() {
                       {activity.type}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-medium">{activity.action}</TableCell>
+                  <TableCell className="font-medium">
+                    {activity.action}
+                  </TableCell>
                   <TableCell>
                     <Badge
                       variant={
-                        activity.status === "success" ? "default" : "destructive"
+                        activity.status === 'success'
+                          ? 'default'
+                          : 'destructive'
                       }
                       className="gap-1"
                     >
-                      {activity.status === "success" ? (
+                      {activity.status === 'success' ? (
                         <CheckCircle2 className="h-3 w-3" />
                       ) : (
                         <XCircle className="h-3 w-3" />
@@ -389,7 +389,7 @@ export default function ActivityPage() {
                   <TableCell className="text-right">
                     {activity.volume
                       ? `$${activity.volume.toLocaleString()}`
-                      : "-"}
+                      : '-'}
                   </TableCell>
                   <TableCell>
                     {activity.txHash ? (
@@ -417,4 +417,3 @@ export default function ActivityPage() {
     </div>
   );
 }
-

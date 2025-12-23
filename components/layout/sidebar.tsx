@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
   Wallet,
@@ -12,17 +12,17 @@ import {
   Settings,
   Zap,
   BarChart3,
-} from "lucide-react";
+} from 'lucide-react';
 
 const navigation = [
-  { name: "Overview", href: "/", icon: LayoutDashboard },
-  { name: "Portfolio", href: "/portfolio", icon: Wallet },
-  { name: "Triggers", href: "/triggers", icon: Target },
-  { name: "Scheduler", href: "/scheduler", icon: Calendar },
-  { name: "Analytics", href: "/analytics", icon: BarChart3 },
-  { name: "Activity", href: "/activity", icon: Activity },
-  { name: "Spaces", href: "/spaces", icon: Zap },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: 'Overview', href: '/', icon: LayoutDashboard },
+  { name: 'Portfolio', href: '/portfolio', icon: Wallet },
+  { name: 'Triggers', href: '/triggers', icon: Target },
+  { name: 'Scheduler', href: '/scheduler', icon: Calendar },
+  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+  { name: 'Activity', href: '/activity', icon: Activity },
+  { name: 'Spaces', href: '/spaces', icon: Zap },
+  { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
 export function Sidebar() {
@@ -41,10 +41,10 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                 isActive
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
               )}
             >
               <item.icon className="h-5 w-5" />
@@ -65,4 +65,3 @@ export function Sidebar() {
     </aside>
   );
 }
-

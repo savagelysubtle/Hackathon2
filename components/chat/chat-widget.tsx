@@ -1,7 +1,14 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Minimize2, MessageCircle, Loader2, AlertCircle, Key } from 'lucide-react';
+import {
+  Send,
+  Minimize2,
+  MessageCircle,
+  Loader2,
+  AlertCircle,
+  Key,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -19,19 +26,22 @@ export function ChatWidget() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'agent',
-      content: '👋 Hi! I\'m your DeFi portfolio assistant. I can help you create triggers, manage jobs, and monitor your portfolio. What would you like to do?',
+      content:
+        "👋 Hi! I'm your DeFi portfolio assistant. I can help you create triggers, manage jobs, and monitor your portfolio. What would you like to do?",
       timestamp: new Date(),
     },
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [mode, setMode] = useState<'demo' | 'full-user' | 'full-server' | null>(null);
+  const [mode, setMode] = useState<'demo' | 'full-user' | 'full-server' | null>(
+    null,
+  );
   const [apiKey, setApiKey] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load API key from localStorage on mount
   useEffect(() => {
-    const storedKey = localStorage.getItem("openai_api_key");
+    const storedKey = localStorage.getItem('openai_api_key');
     if (storedKey) {
       setApiKey(storedKey);
     }
@@ -40,7 +50,7 @@ export function ChatWidget() {
   // Re-check API key when widget opens
   useEffect(() => {
     if (isOpen) {
-      const storedKey = localStorage.getItem("openai_api_key");
+      const storedKey = localStorage.getItem('openai_api_key');
       if (storedKey) {
         setApiKey(storedKey);
       }
@@ -74,7 +84,7 @@ export function ChatWidget() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: input,
-          userApiKey: apiKey || undefined // Send user's key if they have one
+          userApiKey: apiKey || undefined, // Send user's key if they have one
         }),
       });
 
@@ -168,7 +178,9 @@ export function ChatWidget() {
           <div className="flex items-center justify-between p-4 border-b">
             <div>
               <h3 className="font-semibold">Agent Chat</h3>
-              <p className="text-xs text-muted-foreground">AI-powered assistant</p>
+              <p className="text-xs text-muted-foreground">
+                AI-powered assistant
+              </p>
             </div>
             <Button
               variant="ghost"
@@ -210,7 +222,8 @@ export function ChatWidget() {
             <Alert className="m-3 bg-green-50 border-green-200">
               <Key className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-green-800 text-xs">
-                <strong>Full Mode</strong> - Using your API key for unlimited queries.
+                <strong>Full Mode</strong> - Using your API key for unlimited
+                queries.
               </AlertDescription>
             </Alert>
           )}
@@ -277,4 +290,3 @@ export function ChatWidget() {
     </div>
   );
 }
-

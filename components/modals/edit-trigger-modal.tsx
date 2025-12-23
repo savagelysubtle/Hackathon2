@@ -165,7 +165,10 @@ export function EditTriggerModal({
                   max="100"
                   value={formData.thresholdPercentage}
                   onChange={(e) =>
-                    setFormData({ ...formData, thresholdPercentage: Number(e.target.value) })
+                    setFormData({
+                      ...formData,
+                      thresholdPercentage: Number(e.target.value),
+                    })
                   }
                 />
               </div>
@@ -181,7 +184,10 @@ export function EditTriggerModal({
                   max="100"
                   value={formData.actionPercentage}
                   onChange={(e) =>
-                    setFormData({ ...formData, actionPercentage: Number(e.target.value) })
+                    setFormData({
+                      ...formData,
+                      actionPercentage: Number(e.target.value),
+                    })
                   }
                 />
               </div>
@@ -191,7 +197,9 @@ export function EditTriggerModal({
                 <Switch
                   id="isActive"
                   checked={formData.isActive}
-                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, isActive: checked })
+                  }
                 />
               </div>
 
@@ -258,4 +266,3 @@ export function EditTriggerModal({
     </Dialog>
   );
 }
-

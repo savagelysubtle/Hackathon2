@@ -62,7 +62,9 @@ class UserAgent {
    * Activate a price trigger
    */
   private activateTrigger(trigger: TriggerConfig): void {
-    console.log(`🎯 Activated trigger: ${trigger.currencyPair} @ ${trigger.thresholdPercent}%`);
+    console.log(
+      `🎯 Activated trigger: ${trigger.currencyPair} @ ${trigger.thresholdPercent}%`,
+    );
     // TODO: Connect to actual trigger monitoring system
   }
 
@@ -80,7 +82,7 @@ class UserAgent {
    * Remove a trigger
    */
   removeTrigger(triggerId: string): void {
-    this.triggers = this.triggers.filter(t => t.id !== triggerId);
+    this.triggers = this.triggers.filter((t) => t.id !== triggerId);
   }
 
   /**
@@ -220,4 +222,3 @@ export class AgentManager {
 
 // Export singleton instance
 export const agentManager = AgentManager.getInstance();
-

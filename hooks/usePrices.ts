@@ -25,4 +25,3 @@ export function usePrices(pairs: string[]) {
     staleTime: 25000,
   });
 }
-

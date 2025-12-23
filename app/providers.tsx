@@ -1,7 +1,11 @@
 'use client';
 
 import '@rainbow-me/rainbowkit/styles.css';
-import { getDefaultConfig, RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+import {
+  getDefaultConfig,
+  RainbowKitProvider,
+  darkTheme,
+} from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
 import { mainnet, sepolia, polygon, arbitrum } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -10,7 +14,8 @@ import { ReactNode } from 'react';
 // Configure Wagmi with RainbowKit
 const config = getDefaultConfig({
   appName: 'Recurring Executor Agent',
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID',
+  projectId:
+    process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID',
   chains: [mainnet, sepolia, polygon, arbitrum],
   ssr: true, // Enable server-side rendering
 });
@@ -44,4 +49,3 @@ export function Providers({ children }: { children: ReactNode }) {
     </WagmiProvider>
   );
 }
-

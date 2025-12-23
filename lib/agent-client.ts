@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
 export interface AgentStatus {
   agentStatus: string;
@@ -77,43 +77,47 @@ class AgentClient {
 
   async getStatus(): Promise<AgentStatus> {
     const response = await fetch(`${this.baseUrl}/api/status`);
-    if (!response.ok) throw new Error("Failed to fetch status");
+    if (!response.ok) throw new Error('Failed to fetch status');
     return response.json();
   }
 
   async getPortfolio(): Promise<Portfolio> {
     const response = await fetch(`${this.baseUrl}/api/portfolio`);
-    if (!response.ok) throw new Error("Failed to fetch portfolio");
+    if (!response.ok) throw new Error('Failed to fetch portfolio');
     return response.json();
   }
 
-  async getPortfolioHistory(): Promise<{ history: Array<{ date: string; value: number }> }> {
+  async getPortfolioHistory(): Promise<{
+    history: Array<{ date: string; value: number }>;
+  }> {
     const response = await fetch(`${this.baseUrl}/api/portfolio/history`);
-    if (!response.ok) throw new Error("Failed to fetch portfolio history");
+    if (!response.ok) throw new Error('Failed to fetch portfolio history');
     return response.json();
   }
 
   async getTriggers(): Promise<{ triggers: Trigger[] }> {
     const response = await fetch(`${this.baseUrl}/api/triggers`);
-    if (!response.ok) throw new Error("Failed to fetch triggers");
+    if (!response.ok) throw new Error('Failed to fetch triggers');
     return response.json();
   }
 
   async getJobs(): Promise<{ jobs: Job[] }> {
     const response = await fetch(`${this.baseUrl}/api/jobs`);
-    if (!response.ok) throw new Error("Failed to fetch jobs");
+    if (!response.ok) throw new Error('Failed to fetch jobs');
     return response.json();
   }
 
   async getActivity(): Promise<{ activities: Activity[] }> {
     const response = await fetch(`${this.baseUrl}/api/activity`);
-    if (!response.ok) throw new Error("Failed to fetch activity");
+    if (!response.ok) throw new Error('Failed to fetch activity');
     return response.json();
   }
 
-  async getPrices(): Promise<Record<string, { price: number; change24h: number; timestamp: string }>> {
+  async getPrices(): Promise<
+    Record<string, { price: number; change24h: number; timestamp: string }>
+  > {
     const response = await fetch(`${this.baseUrl}/api/prices`);
-    if (!response.ok) throw new Error("Failed to fetch prices");
+    if (!response.ok) throw new Error('Failed to fetch prices');
     return response.json();
   }
 
@@ -123,10 +127,9 @@ class AgentClient {
     checks: Record<string, string>;
   }> {
     const response = await fetch(`${this.baseUrl}/api/health`);
-    if (!response.ok) throw new Error("Failed to fetch health");
+    if (!response.ok) throw new Error('Failed to fetch health');
     return response.json();
   }
 }
 
 export const agentClient = new AgentClient();
-

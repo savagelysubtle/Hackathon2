@@ -19,10 +19,7 @@ export class RecurringExecutorAgent {
   private scheduler: LangGraphScheduler;
   private walletAddress: string;
 
-  constructor(
-    _agentkit: WardenAgentKit,
-    walletAddress?: string,
-  ) {
+  constructor(_agentkit: WardenAgentKit, walletAddress?: string) {
     this.walletAddress = walletAddress || 'mock-address';
     this.scheduler = new LangGraphScheduler();
   }

@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     async start(controller) {
       // Send initial connection message
       controller.enqueue(
-        encoder.encode('event: connected\ndata: {"status":"connected"}\n\n')
+        encoder.encode('event: connected\ndata: {"status":"connected"}\n\n'),
       );
 
       // Subscribe to agent updates
@@ -43,9 +43,8 @@ export async function GET(request: NextRequest) {
     headers: {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache, no-transform',
-      'Connection': 'keep-alive',
+      Connection: 'keep-alive',
       'X-Accel-Buffering': 'no', // Disable buffering for Nginx
     },
   });
 }
-

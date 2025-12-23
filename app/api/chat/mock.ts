@@ -33,7 +33,7 @@ export const mockResponses = {
 - USDC: On target ✅
 
 **Recommendation:** Portfolio drift detected. Consider rebalancing to maintain target allocations.`,
-    delay: 1200
+    delay: 1200,
   },
 
   // Trigger creation
@@ -52,7 +52,7 @@ export const mockResponses = {
 I'm now monitoring SOL price every minute. When it hits $114, I'll automatically prepare a sell transaction for your approval.
 
 You can view this trigger in the "Triggers" tab!`,
-    delay: 1500
+    delay: 1500,
   },
 
   // Price queries
@@ -71,7 +71,7 @@ You can view this trigger in the "Triggers" tab!`,
 - USDC: 2,000 ($2,000)
 
 *Prices updated 30 seconds ago via Warden x/oracle*`,
-    delay: 800
+    delay: 800,
   },
 
   // Rebalancing
@@ -97,7 +97,7 @@ USDC: 30% → 30% (On target ✅)
 **Expected Slippage:** <0.5%
 
 Would you like me to prepare these transactions?`,
-    delay: 1400
+    delay: 1400,
   },
 
   // Schedule query
@@ -123,7 +123,7 @@ Would you like me to prepare these transactions?`,
 - Next check: In 3 minutes
 
 Add more schedules in the "Scheduler" tab!`,
-    delay: 1000
+    delay: 1000,
   },
 
   // Spaces query
@@ -146,7 +146,7 @@ Add more schedules in the "Scheduler" tab!`,
 Warden Spaces are smart accounts that let me execute trades autonomously. When you approve an intent, I can execute it automatically without asking every time!
 
 Want to create a new Space for a specific strategy?`,
-    delay: 1100
+    delay: 1100,
   },
 
   // Help/default
@@ -185,8 +185,8 @@ I'm your autonomous trading assistant powered by Warden Protocol. Here's what I 
 _These are simulated responses. To connect to real AI and execute actual trades, add your OpenAI API key in Settings._
 
 Try asking: "Show my portfolio" or "Create a trigger for SOL"!`,
-    delay: 1000
-  }
+    delay: 1000,
+  },
 };
 
 /**
@@ -196,27 +196,48 @@ export function getMockResponse(message: string): MockResponse {
   const lower = message.toLowerCase();
 
   // Portfolio queries
-  if (lower.includes('portfolio') || lower.includes('holdings') || lower.includes('balance')) {
+  if (
+    lower.includes('portfolio') ||
+    lower.includes('holdings') ||
+    lower.includes('balance')
+  ) {
     return mockResponses.portfolio;
   }
 
   // Trigger creation
-  if (lower.includes('trigger') || lower.includes('alert') || lower.includes('notify')) {
+  if (
+    lower.includes('trigger') ||
+    lower.includes('alert') ||
+    lower.includes('notify')
+  ) {
     return mockResponses.trigger;
   }
 
   // Price queries
-  if (lower.includes('price') || lower.includes('cost') || lower.includes('market')) {
+  if (
+    lower.includes('price') ||
+    lower.includes('cost') ||
+    lower.includes('market')
+  ) {
     return mockResponses.price;
   }
 
   // Rebalancing
-  if (lower.includes('rebalance') || lower.includes('drift') || lower.includes('allocation')) {
+  if (
+    lower.includes('rebalance') ||
+    lower.includes('drift') ||
+    lower.includes('allocation')
+  ) {
     return mockResponses.rebalance;
   }
 
   // Schedule queries
-  if (lower.includes('schedule') || lower.includes('cron') || lower.includes('recurring') || lower.includes('dca')) {
+  if (
+    lower.includes('schedule') ||
+    lower.includes('cron') ||
+    lower.includes('recurring') ||
+    lower.includes('dca')
+  ) {
     return mockResponses.schedule;
   }
 
@@ -236,6 +257,5 @@ export async function simulateTypingDelay(text: string): Promise<void> {
   // Simulate ~50 words per minute typing speed
   const words = text.split(' ').length;
   const delay = (words / 50) * 60 * 1000; // Convert to ms
-  await new Promise(resolve => setTimeout(resolve, Math.min(delay, 2000))); // Cap at 2s
+  await new Promise((resolve) => setTimeout(resolve, Math.min(delay, 2000))); // Cap at 2s
 }
-

@@ -28,7 +28,11 @@ interface CreateTriggerModalProps {
   onSuccess: () => void;
 }
 
-export function CreateTriggerModal({ isOpen, onClose, onSuccess }: CreateTriggerModalProps) {
+export function CreateTriggerModal({
+  isOpen,
+  onClose,
+  onSuccess,
+}: CreateTriggerModalProps) {
   const [formData, setFormData] = useState({
     currencyPair: 'SOL/USD',
     thresholdPercentage: 15,
@@ -42,12 +46,16 @@ export function CreateTriggerModal({ isOpen, onClose, onSuccess }: CreateTrigger
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
-    if (formData.thresholdPercentage <= 0 || formData.thresholdPercentage > 100) {
+    if (
+      formData.thresholdPercentage <= 0 ||
+      formData.thresholdPercentage > 100
+    ) {
       newErrors.thresholdPercentage = 'Threshold must be between 1 and 100';
     }
 
     if (formData.actionPercentage <= 0 || formData.actionPercentage > 100) {
-      newErrors.actionPercentage = 'Action percentage must be between 1 and 100';
+      newErrors.actionPercentage =
+        'Action percentage must be between 1 and 100';
     }
 
     setErrors(newErrors);
@@ -114,7 +122,9 @@ export function CreateTriggerModal({ isOpen, onClose, onSuccess }: CreateTrigger
             <Label htmlFor="currencyPair">Currency Pair</Label>
             <Select
               value={formData.currencyPair}
-              onValueChange={(value) => setFormData({ ...formData, currencyPair: value })}
+              onValueChange={(value) =>
+                setFormData({ ...formData, currencyPair: value })
+              }
             >
               <SelectTrigger id="currencyPair">
                 <SelectValue />
@@ -138,12 +148,17 @@ export function CreateTriggerModal({ isOpen, onClose, onSuccess }: CreateTrigger
               max="100"
               value={formData.thresholdPercentage}
               onChange={(e) =>
-                setFormData({ ...formData, thresholdPercentage: Number(e.target.value) })
+                setFormData({
+                  ...formData,
+                  thresholdPercentage: Number(e.target.value),
+                })
               }
               className={errors.thresholdPercentage ? 'border-red-500' : ''}
             />
             {errors.thresholdPercentage && (
-              <p className="text-sm text-red-500">{errors.thresholdPercentage}</p>
+              <p className="text-sm text-red-500">
+                {errors.thresholdPercentage}
+              </p>
             )}
             <p className="text-sm text-muted-foreground">
               Trigger when price moves this percentage from baseline
@@ -157,7 +172,9 @@ export function CreateTriggerModal({ isOpen, onClose, onSuccess }: CreateTrigger
                 <input
                   type="radio"
                   checked={formData.direction === 'above'}
-                  onChange={() => setFormData({ ...formData, direction: 'above' })}
+                  onChange={() =>
+                    setFormData({ ...formData, direction: 'above' })
+                  }
                   className="cursor-pointer"
                 />
                 <span>Above (Pump) 📈</span>
@@ -166,7 +183,9 @@ export function CreateTriggerModal({ isOpen, onClose, onSuccess }: CreateTrigger
                 <input
                   type="radio"
                   checked={formData.direction === 'below'}
-                  onChange={() => setFormData({ ...formData, direction: 'below' })}
+                  onChange={() =>
+                    setFormData({ ...formData, direction: 'below' })
+                  }
                   className="cursor-pointer"
                 />
                 <span>Below (Dump) 📉</span>
@@ -185,7 +204,10 @@ export function CreateTriggerModal({ isOpen, onClose, onSuccess }: CreateTrigger
               max="100"
               value={formData.actionPercentage}
               onChange={(e) =>
-                setFormData({ ...formData, actionPercentage: Number(e.target.value) })
+                setFormData({
+                  ...formData,
+                  actionPercentage: Number(e.target.value),
+                })
               }
               className={errors.actionPercentage ? 'border-red-500' : ''}
             />
@@ -193,8 +215,8 @@ export function CreateTriggerModal({ isOpen, onClose, onSuccess }: CreateTrigger
               <p className="text-sm text-red-500">{errors.actionPercentage}</p>
             )}
             <p className="text-sm text-muted-foreground">
-              Percentage of asset to {formData.direction === 'above' ? 'sell' : 'buy'} when
-              triggered
+              Percentage of asset to{' '}
+              {formData.direction === 'above' ? 'sell' : 'buy'} when triggered
             </p>
           </div>
 
@@ -204,7 +226,9 @@ export function CreateTriggerModal({ isOpen, onClose, onSuccess }: CreateTrigger
               id="name"
               placeholder="e.g., SOL 15% Pump Sell"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
             />
           </div>
 
@@ -212,9 +236,11 @@ export function CreateTriggerModal({ isOpen, onClose, onSuccess }: CreateTrigger
           <div className="rounded-lg bg-muted p-4">
             <p className="text-sm font-medium mb-2">Preview:</p>
             <p className="text-sm text-muted-foreground">
-              {formData.direction === 'above' ? 'Sell' : 'Buy'} {formData.actionPercentage}% of{' '}
-              {formData.currencyPair.split('/')[0]} when price moves {formData.thresholdPercentage}
-              % {formData.direction} baseline price
+              {formData.direction === 'above' ? 'Sell' : 'Buy'}{' '}
+              {formData.actionPercentage}% of{' '}
+              {formData.currencyPair.split('/')[0]} when price moves{' '}
+              {formData.thresholdPercentage}% {formData.direction} baseline
+              price
             </p>
           </div>
         </div>
@@ -231,4 +257,3 @@ export function CreateTriggerModal({ isOpen, onClose, onSuccess }: CreateTrigger
     </Dialog>
   );
 }
-

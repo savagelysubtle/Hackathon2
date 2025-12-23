@@ -47,7 +47,7 @@ export class AgentService {
   private triggers: Map<string, TriggerConfig> = new Map();
   private jobs: Map<string, JobConfig> = new Map();
   private portfolioConfig: PortfolioConfig = {
-    targetAllocation: { ETH: 0.60, USDC: 0.40 },
+    targetAllocation: { ETH: 0.6, USDC: 0.4 },
     rebalanceThreshold: 0.05,
   };
 
@@ -137,7 +137,10 @@ export class AgentService {
     return id;
   }
 
-  async updateTrigger(id: string, updates: Partial<TriggerConfig>): Promise<void> {
+  async updateTrigger(
+    id: string,
+    updates: Partial<TriggerConfig>,
+  ): Promise<void> {
     const trigger = this.triggers.get(id);
     if (!trigger) {
       throw new Error(`Trigger ${id} not found`);
@@ -224,7 +227,9 @@ export class AgentService {
     console.log('Resumed job:', id);
   }
 
-  async executeJobNow(id: string): Promise<{ success: boolean; jobId: string }> {
+  async executeJobNow(
+    id: string,
+  ): Promise<{ success: boolean; jobId: string }> {
     const job = this.jobs.get(id);
     if (!job) {
       throw new Error(`Job ${id} not found`);
@@ -262,14 +267,16 @@ export class AgentService {
     console.log('Updated portfolio config:', this.portfolioConfig);
   }
 
-  async rebalanceNow(): Promise<{ success: boolean; swaps: any[]; txHash?: string }> {
+  async rebalanceNow(): Promise<{
+    success: boolean;
+    swaps: any[];
+    txHash?: string;
+  }> {
     // TODO: Trigger immediate rebalance via PortfolioRebalancer
     console.log('Executing portfolio rebalance...');
 
     // Simulate rebalance
-    const swaps = [
-      { from: 'USDC', to: 'ETH', amount: 2500 },
-    ];
+    const swaps = [{ from: 'USDC', to: 'ETH', amount: 2500 }];
 
     return {
       success: true,
@@ -283,8 +290,8 @@ export class AgentService {
     return {
       totalValue: 50000,
       assets: [
-        { symbol: 'ETH', balance: 8.57, value: 30000, allocation: 0.60 },
-        { symbol: 'USDC', balance: 20000, value: 20000, allocation: 0.40 },
+        { symbol: 'ETH', balance: 8.57, value: 30000, allocation: 0.6 },
+        { symbol: 'USDC', balance: 20000, value: 20000, allocation: 0.4 },
       ],
       drift: 0.5,
       targetAllocation: this.portfolioConfig.targetAllocation,
@@ -318,4 +325,3 @@ export class AgentService {
 
 // Export singleton instance
 export const agentService = AgentService.getInstance();
-

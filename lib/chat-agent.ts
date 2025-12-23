@@ -10,16 +10,38 @@ import { agentService } from './agent-service';
 
 // Tool schemas
 const CreateTriggerSchema = z.object({
-  currencyPair: z.string().describe('Currency pair like SOL/USD, ETH/USD, BTC/USD'),
-  thresholdPercentage: z.number().min(1).max(100).describe('Price change threshold percentage'),
-  actionPercentage: z.number().min(1).max(100).describe('Percentage to sell/buy when triggered'),
-  direction: z.enum(['above', 'below']).describe('Trigger when price goes above or below'),
+  currencyPair: z
+    .string()
+    .describe('Currency pair like SOL/USD, ETH/USD, BTC/USD'),
+  thresholdPercentage: z
+    .number()
+    .min(1)
+    .max(100)
+    .describe('Price change threshold percentage'),
+  actionPercentage: z
+    .number()
+    .min(1)
+    .max(100)
+    .describe('Percentage to sell/buy when triggered'),
+  direction: z
+    .enum(['above', 'below'])
+    .describe('Trigger when price goes above or below'),
 });
 
 const UpdateTriggerSchema = z.object({
   triggerId: z.string().describe('ID of the trigger to update'),
-  thresholdPercentage: z.number().min(1).max(100).optional().describe('New threshold percentage'),
-  actionPercentage: z.number().min(1).max(100).optional().describe('New action percentage'),
+  thresholdPercentage: z
+    .number()
+    .min(1)
+    .max(100)
+    .optional()
+    .describe('New threshold percentage'),
+  actionPercentage: z
+    .number()
+    .min(1)
+    .max(100)
+    .optional()
+    .describe('New action percentage'),
 });
 
 const PauseJobSchema = z.object({
@@ -35,9 +57,15 @@ const GetPortfolioSchema = z.object({});
 // Create tools
 const createTriggerTool = new DynamicStructuredTool({
   name: 'create_trigger',
-  description: 'Create a new price trigger for automatic trading when price thresholds are met',
+  description:
+    'Create a new price trigger for automatic trading when price thresholds are met',
   schema: CreateTriggerSchema,
-  func: async ({ currencyPair, thresholdPercentage, actionPercentage, direction }) => {
+  func: async ({
+    currencyPair,
+    thresholdPercentage,
+    actionPercentage,
+    direction,
+  }) => {
     try {
       const triggerId = await agentService.createTrigger({
         currencyPair,
@@ -107,7 +135,8 @@ const resumeJobTool = new DynamicStructuredTool({
 
 const getPortfolioTool = new DynamicStructuredTool({
   name: 'get_portfolio',
-  description: 'Get current portfolio status including assets, values, and allocations',
+  description:
+    'Get current portfolio status including assets, values, and allocations',
   schema: GetPortfolioSchema,
   func: async () => {
     try {
@@ -173,7 +202,9 @@ export class ChatAgent {
     if (!apiKey) {
       // Don't throw - let the route handler deal with missing keys
       // This allows the class to be imported without breaking the build
-      console.warn('ChatAgent initialized without API key - will not be functional');
+      console.warn(
+        'ChatAgent initialized without API key - will not be functional',
+      );
     }
 
     // Only initialize LLM if we have an API key
@@ -275,4 +306,3 @@ export function getChatAgent(customApiKey?: string): ChatAgent {
   }
   return chatAgentInstance;
 }
-

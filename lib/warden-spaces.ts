@@ -137,10 +137,7 @@ export class WardenSpaceManager {
    * In production, this would call:
    * - agentkit.executeOnSpace({ spaceId, action, params })
    */
-  async executeOnSpace(
-    spaceId: string,
-    action: SpaceAction
-  ): Promise<string> {
+  async executeOnSpace(spaceId: string, action: SpaceAction): Promise<string> {
     console.log(`⚡ Executing ${action.type} on Space ${spaceId}`);
 
     // TODO: Integrate with actual Warden Agent Kit
@@ -162,7 +159,7 @@ export class WardenSpaceManager {
    */
   async executeRebalance(
     spaceId: string,
-    swaps: Array<{ from: string; to: string; amount: string }>
+    swaps: Array<{ from: string; to: string; amount: string }>,
   ): Promise<string> {
     return this.executeOnSpace(spaceId, {
       type: 'rebalance',
@@ -177,7 +174,7 @@ export class WardenSpaceManager {
     spaceId: string,
     fromToken: string,
     toToken: string,
-    amount: string
+    amount: string,
   ): Promise<string> {
     return this.executeOnSpace(spaceId, {
       type: 'swap',
@@ -235,4 +232,3 @@ export class WardenSpaceManager {
 
 // Export singleton instance
 export const spaceManager = WardenSpaceManager.getInstance();
-

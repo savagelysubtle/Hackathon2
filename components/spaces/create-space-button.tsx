@@ -92,16 +92,14 @@ export function CreateSpaceButton() {
           </div>
 
           <div>
-            <div className="text-sm text-muted-foreground mb-1">Deposit Address</div>
+            <div className="text-sm text-muted-foreground mb-1">
+              Deposit Address
+            </div>
             <div className="flex items-center gap-2">
               <div className="font-mono text-sm bg-muted px-3 py-2 rounded flex-1">
                 {space.address}
               </div>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={copyAddress}
-              >
+              <Button variant="outline" size="icon" onClick={copyAddress}>
                 <Copy className="h-4 w-4" />
               </Button>
             </div>
@@ -141,4 +139,3 @@ export function CreateSpaceButton() {
     </Button>
   );
 }
-

@@ -141,7 +141,9 @@ export function createWardenTools(
               success: true,
               trigger,
               message: `✅ Created trigger: ${action} when ${asset} ${condition}s ${Math.abs(threshold)}%`,
-              storedOnChain: spacesManager.isOnChain() ? '✅ Saved to Warden Chain' : '📝 Saved locally',
+              storedOnChain: spacesManager.isOnChain()
+                ? '✅ Saved to Warden Chain'
+                : '📝 Saved locally',
             },
             null,
             2,
@@ -295,7 +297,9 @@ export function createWardenTools(
       schema: z.object({
         portfolio: z
           .object({
-            allocations: z.record(z.string(), z.number()).describe('Current allocations'),
+            allocations: z
+              .record(z.string(), z.number())
+              .describe('Current allocations'),
             targetAllocations: z
               .record(z.string(), z.number())
               .describe('Target allocations'),

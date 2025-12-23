@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -11,10 +11,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Calendar, Clock, CheckCircle2, XCircle, PlayCircle, Pause, Play } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { toast } from "sonner";
+} from '@/components/ui/table';
+import {
+  Calendar,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  PlayCircle,
+  Pause,
+  Play,
+} from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { toast } from 'sonner';
 
 interface Job {
   id: string;
@@ -28,10 +36,10 @@ interface Job {
 }
 
 const stats = [
-  { title: "Total Jobs", value: "3", change: "Active" },
-  { title: "Executions Today", value: "289", change: "+12%" },
-  { title: "Success Rate", value: "99.8%", change: "Last 7 days" },
-  { title: "Avg Duration", value: "8.2s", change: "Per execution" },
+  { title: 'Total Jobs', value: '3', change: 'Active' },
+  { title: 'Executions Today', value: '289', change: '+12%' },
+  { title: 'Success Rate', value: '99.8%', change: 'Last 7 days' },
+  { title: 'Avg Duration', value: '8.2s', change: 'Per execution' },
 ];
 
 export default function SchedulerPage() {
@@ -41,12 +49,12 @@ export default function SchedulerPage() {
 
   const fetchJobs = async () => {
     try {
-      const response = await fetch("/api/jobs");
-      if (!response.ok) throw new Error("Failed to fetch jobs");
+      const response = await fetch('/api/jobs');
+      if (!response.ok) throw new Error('Failed to fetch jobs');
       const data = await response.json();
       setJobs(data.jobs);
     } catch (error: any) {
-      toast.error("Failed to load jobs", {
+      toast.error('Failed to load jobs', {
         description: error.message,
       });
     } finally {
@@ -65,18 +73,18 @@ export default function SchedulerPage() {
 
     try {
       const response = await fetch(`/api/jobs/${jobId}/run`, {
-        method: "POST",
+        method: 'POST',
       });
-      if (!response.ok) throw new Error("Failed to execute job");
+      if (!response.ok) throw new Error('Failed to execute job');
 
       toast.success(`${jobName} started`, {
-        description: "Job is now executing...",
+        description: 'Job is now executing...',
       });
 
       // Refresh jobs after a delay to show updated stats
       setTimeout(fetchJobs, 2000);
     } catch (error: any) {
-      toast.error("Failed to execute job", {
+      toast.error('Failed to execute job', {
         description: error.message,
       });
     } finally {
@@ -91,14 +99,14 @@ export default function SchedulerPage() {
   const handlePauseJob = async (jobId: string, jobName: string) => {
     try {
       const response = await fetch(`/api/jobs/${jobId}/pause`, {
-        method: "POST",
+        method: 'POST',
       });
-      if (!response.ok) throw new Error("Failed to pause job");
+      if (!response.ok) throw new Error('Failed to pause job');
 
       toast.success(`${jobName} paused`);
       fetchJobs();
     } catch (error: any) {
-      toast.error("Failed to pause job", {
+      toast.error('Failed to pause job', {
         description: error.message,
       });
     }
@@ -107,14 +115,14 @@ export default function SchedulerPage() {
   const handleResumeJob = async (jobId: string, jobName: string) => {
     try {
       const response = await fetch(`/api/jobs/${jobId}/resume`, {
-        method: "POST",
+        method: 'POST',
       });
-      if (!response.ok) throw new Error("Failed to resume job");
+      if (!response.ok) throw new Error('Failed to resume job');
 
       toast.success(`${jobName} resumed`);
       fetchJobs();
     } catch (error: any) {
-      toast.error("Failed to resume job", {
+      toast.error('Failed to resume job', {
         description: error.message,
       });
     }
@@ -135,7 +143,9 @@ export default function SchedulerPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Scheduler</h1>
-        <p className="text-muted-foreground">Monitor scheduled jobs and execution history</p>
+        <p className="text-muted-foreground">
+          Monitor scheduled jobs and execution history
+        </p>
       </div>
 
       {/* Statistics */}
@@ -143,7 +153,9 @@ export default function SchedulerPage() {
         {stats.map((stat) => (
           <Card key={stat.title}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {stat.title}
+              </CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -171,11 +183,13 @@ export default function SchedulerPage() {
                     </div>
                     <div>
                       <CardTitle>{job.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground">Schedule: {job.schedule}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Schedule: {job.schedule}
+                      </p>
                     </div>
                   </div>
-                  <Badge variant={job.enabled ? "default" : "secondary"}>
-                    {job.enabled ? "Enabled" : "Paused"}
+                  <Badge variant={job.enabled ? 'default' : 'secondary'}>
+                    {job.enabled ? 'Enabled' : 'Paused'}
                   </Badge>
                 </div>
               </CardHeader>
@@ -183,7 +197,9 @@ export default function SchedulerPage() {
                 <div className="grid gap-6 md:grid-cols-2">
                   <div className="space-y-4">
                     <div>
-                      <div className="text-sm text-muted-foreground mb-1">Last Run</div>
+                      <div className="text-sm text-muted-foreground mb-1">
+                        Last Run
+                      </div>
                       <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4" />
                         <span>
@@ -191,12 +207,14 @@ export default function SchedulerPage() {
                             ? formatDistanceToNow(lastRun, {
                                 addSuffix: true,
                               })
-                            : "Never"}
+                            : 'Never'}
                         </span>
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground mb-1">Next Run</div>
+                      <div className="text-sm text-muted-foreground mb-1">
+                        Next Run
+                      </div>
                       <div className="flex items-center gap-2">
                         <PlayCircle className="h-4 w-4" />
                         <span>
@@ -204,7 +222,7 @@ export default function SchedulerPage() {
                             ? formatDistanceToNow(nextRun, {
                                 addSuffix: true,
                               })
-                            : "Not scheduled"}
+                            : 'Not scheduled'}
                         </span>
                       </div>
                     </div>
@@ -212,10 +230,14 @@ export default function SchedulerPage() {
 
                   <div className="space-y-4">
                     <div>
-                      <div className="text-sm text-muted-foreground mb-1">Success Rate</div>
+                      <div className="text-sm text-muted-foreground mb-1">
+                        Success Rate
+                      </div>
                       <div className="flex items-center gap-2">
                         <CheckCircle2 className="h-4 w-4 text-green-500" />
-                        <span className="font-medium">{job.successRate.toFixed(1)}%</span>
+                        <span className="font-medium">
+                          {job.successRate.toFixed(1)}%
+                        </span>
                         <span className="text-sm text-muted-foreground">
                           ({job.totalRuns} runs)
                         </span>
@@ -230,7 +252,7 @@ export default function SchedulerPage() {
                         className="flex-1"
                       >
                         <PlayCircle className="h-4 w-4 mr-2" />
-                        {isRunning ? "Running..." : "Run Now"}
+                        {isRunning ? 'Running...' : 'Run Now'}
                       </Button>
                       {job.enabled ? (
                         <Button
@@ -280,9 +302,13 @@ export default function SchedulerPage() {
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell className="font-medium">Price Trigger Check</TableCell>
+                <TableCell className="font-medium">
+                  Price Trigger Check
+                </TableCell>
                 <TableCell>
-                  {formatDistanceToNow(new Date(Date.now() - 300000), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(Date.now() - 300000), {
+                    addSuffix: true,
+                  })}
                 </TableCell>
                 <TableCell>2.1s</TableCell>
                 <TableCell>
@@ -296,7 +322,9 @@ export default function SchedulerPage() {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="font-medium">Weekly Portfolio Rebalance</TableCell>
+                <TableCell className="font-medium">
+                  Weekly Portfolio Rebalance
+                </TableCell>
                 <TableCell>
                   {formatDistanceToNow(new Date(Date.now() - 259200000), {
                     addSuffix: true,
@@ -314,7 +342,9 @@ export default function SchedulerPage() {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="font-medium">Daily Health Check</TableCell>
+                <TableCell className="font-medium">
+                  Daily Health Check
+                </TableCell>
                 <TableCell>
                   {formatDistanceToNow(new Date(Date.now() - 43200000), {
                     addSuffix: true,
@@ -327,7 +357,9 @@ export default function SchedulerPage() {
                     success
                   </Badge>
                 </TableCell>
-                <TableCell className="text-muted-foreground">All systems operational</TableCell>
+                <TableCell className="text-muted-foreground">
+                  All systems operational
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -336,4 +368,3 @@ export default function SchedulerPage() {
     </div>
   );
 }
-

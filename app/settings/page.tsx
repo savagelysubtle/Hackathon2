@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Settings as SettingsIcon, Save } from "lucide-react";
-import { ApiKeySettings } from "@/components/ApiKeySettings";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Settings as SettingsIcon, Save } from 'lucide-react';
+import { ApiKeySettings } from '@/components/ApiKeySettings';
 
 export default function SettingsPage() {
   return (
@@ -133,4 +133,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-

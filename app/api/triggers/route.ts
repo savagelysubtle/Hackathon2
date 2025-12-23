@@ -8,7 +8,7 @@ export async function GET() {
     const triggers = await agentService.getTriggers();
 
     // Simulate current prices and progress
-    const triggersWithProgress = triggers.map(trigger => {
+    const triggersWithProgress = triggers.map((trigger) => {
       const baselinePrice = trigger.baselinePrice;
       const currentPrice = baselinePrice * (1 + (Math.random() * 0.15 - 0.025)); // ±2.5% variation
       const priceDiff = ((currentPrice - baselinePrice) / baselinePrice) * 100;
@@ -33,10 +33,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Validate required fields
-    if (!body.currencyPair || !body.thresholdPercentage || !body.actionPercentage) {
+    if (
+      !body.currencyPair ||
+      !body.thresholdPercentage ||
+      !body.actionPercentage
+    ) {
       return NextResponse.json(
         { error: 'Missing required fields' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

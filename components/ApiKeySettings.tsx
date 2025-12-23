@@ -1,12 +1,25 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Key, Trash2, CheckCircle, AlertCircle } from "lucide-react";
+import { useState, useEffect } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  Eye,
+  EyeOff,
+  Key,
+  Trash2,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react';
 
 /**
  * API Key Settings Component
@@ -15,19 +28,21 @@ import { Eye, EyeOff, Key, Trash2, CheckCircle, AlertCircle } from "lucide-react
  * Keys are stored in localStorage (client-side only) for security.
  */
 export function ApiKeySettings() {
-  const [apiKey, setApiKey] = useState("");
+  const [apiKey, setApiKey] = useState('');
   const [showKey, setShowKey] = useState(false);
   const [hasKey, setHasKey] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
-  const [validationStatus, setValidationStatus] = useState<"idle" | "valid" | "invalid">("idle");
+  const [validationStatus, setValidationStatus] = useState<
+    'idle' | 'valid' | 'invalid'
+  >('idle');
 
   // Load existing key on mount
   useEffect(() => {
-    const storedKey = localStorage.getItem("openai_api_key");
+    const storedKey = localStorage.getItem('openai_api_key');
     if (storedKey) {
       setApiKey(storedKey);
       setHasKey(true);
-      setValidationStatus("valid");
+      setValidationStatus('valid');
     }
   }, []);
 
@@ -38,37 +53,37 @@ export function ApiKeySettings() {
     }
 
     setIsValidating(true);
-    setValidationStatus("idle");
+    setValidationStatus('idle');
 
     try {
       // Basic validation: OpenAI keys start with "sk-"
-      if (!apiKey.startsWith("sk-")) {
-        setValidationStatus("invalid");
+      if (!apiKey.startsWith('sk-')) {
+        setValidationStatus('invalid');
         setIsValidating(false);
         return;
       }
 
       // Test the key with a minimal API call
-      const testResponse = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const testResponse = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: "test",
+          message: 'test',
           userApiKey: apiKey,
-          testMode: true // Special flag to test key without full processing
-        })
+          testMode: true, // Special flag to test key without full processing
+        }),
       });
 
       if (testResponse.ok) {
-        localStorage.setItem("openai_api_key", apiKey);
+        localStorage.setItem('openai_api_key', apiKey);
         setHasKey(true);
-        setValidationStatus("valid");
+        setValidationStatus('valid');
       } else {
-        setValidationStatus("invalid");
+        setValidationStatus('invalid');
       }
     } catch (error) {
-      console.error("Key validation error:", error);
-      setValidationStatus("invalid");
+      console.error('Key validation error:', error);
+      setValidationStatus('invalid');
     } finally {
       setIsValidating(false);
     }
@@ -76,10 +91,10 @@ export function ApiKeySettings() {
 
   // Remove API key
   const handleRemoveKey = () => {
-    localStorage.removeItem("openai_api_key");
-    setApiKey("");
+    localStorage.removeItem('openai_api_key');
+    setApiKey('');
     setHasKey(false);
-    setValidationStatus("idle");
+    setValidationStatus('idle');
   };
 
   return (
@@ -90,7 +105,8 @@ export function ApiKeySettings() {
           OpenAI API Key
         </CardTitle>
         <CardDescription>
-          Add your own OpenAI API key to unlock full AI capabilities. Your key is stored locally and never sent to our servers.
+          Add your own OpenAI API key to unlock full AI capabilities. Your key
+          is stored locally and never sent to our servers.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -99,14 +115,16 @@ export function ApiKeySettings() {
           <Alert className="bg-green-50 border-green-200">
             <CheckCircle className="h-4 w-4 text-green-600" />
             <AlertDescription className="text-green-800">
-              <strong>Full Mode Active</strong> - Using your OpenAI API key for unlimited queries
+              <strong>Full Mode Active</strong> - Using your OpenAI API key for
+              unlimited queries
             </AlertDescription>
           </Alert>
         ) : (
           <Alert className="bg-blue-50 border-blue-200">
             <AlertCircle className="h-4 w-4 text-blue-600" />
             <AlertDescription className="text-blue-800">
-              <strong>Demo Mode Active</strong> - Add your API key to unlock real AI responses
+              <strong>Demo Mode Active</strong> - Add your API key to unlock
+              real AI responses
             </AlertDescription>
           </Alert>
         )}
@@ -118,7 +136,7 @@ export function ApiKeySettings() {
             <div className="relative flex-1">
               <Input
                 id="api-key"
-                type={showKey ? "text" : "password"}
+                type={showKey ? 'text' : 'password'}
                 placeholder="sk-..."
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
@@ -130,7 +148,11 @@ export function ApiKeySettings() {
                 onClick={() => setShowKey(!showKey)}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
-                {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showKey ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
             {hasKey ? (
@@ -148,28 +170,31 @@ export function ApiKeySettings() {
                 disabled={!apiKey.trim() || isValidating}
                 className="gap-2"
               >
-                {isValidating ? "Validating..." : "Save"}
+                {isValidating ? 'Validating...' : 'Save'}
               </Button>
             )}
           </div>
         </div>
 
         {/* Validation Status */}
-        {validationStatus === "invalid" && (
+        {validationStatus === 'invalid' && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Invalid API key. Make sure it starts with "sk-" and is active in your OpenAI account.
+              Invalid API key. Make sure it starts with "sk-" and is active in
+              your OpenAI account.
             </AlertDescription>
           </Alert>
         )}
 
         {/* How to Get Key */}
         <div className="space-y-2 pt-4 border-t">
-          <h4 className="font-semibold text-sm">How to get an OpenAI API key:</h4>
+          <h4 className="font-semibold text-sm">
+            How to get an OpenAI API key:
+          </h4>
           <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
             <li>
-              Go to{" "}
+              Go to{' '}
               <a
                 href="https://platform.openai.com/api-keys"
                 target="_blank"
@@ -201,4 +226,3 @@ export function ApiKeySettings() {
     </Card>
   );
 }
-

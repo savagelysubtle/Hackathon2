@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { spaceManager } from "@/lib/warden-spaces";
+import { NextResponse } from 'next/server';
+import { spaceManager } from '@/lib/warden-spaces';
 
 /**
  * POST /api/spaces/execute
@@ -11,8 +11,8 @@ export async function POST(request: Request) {
 
     if (!spaceId || !action) {
       return NextResponse.json(
-        { error: "spaceId and action are required" },
-        { status: 400 }
+        { error: 'spaceId and action are required' },
+        { status: 400 },
       );
     }
 
@@ -27,11 +27,13 @@ export async function POST(request: Request) {
       message: `Action ${action} executed successfully`,
     });
   } catch (error) {
-    console.error("Error executing on Space:", error);
+    console.error('Error executing on Space:', error);
     return NextResponse.json(
-      { error: "Failed to execute on Space", details: (error as Error).message },
-      { status: 500 }
+      {
+        error: 'Failed to execute on Space',
+        details: (error as Error).message,
+      },
+      { status: 500 },
     );
   }
 }
-

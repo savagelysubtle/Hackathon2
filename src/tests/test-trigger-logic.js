@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * Simple Trigger Logic Test (No Async)
  */
@@ -8,85 +8,95 @@ console.log('══════════════════════�
 console.log('Test 1: Percentage Calculation');
 console.log('─────────────────────────────────────────────────');
 function calculateChange(current, baseline) {
-    return ((current - baseline) / baseline) * 100;
+  return ((current - baseline) / baseline) * 100;
 }
 const tests = [
-    { current: 200, baseline: 200, expected: 0 },
-    { current: 230, baseline: 200, expected: 15 },
-    { current: 250, baseline: 200, expected: 25 },
-    { current: 170, baseline: 200, expected: -15 },
+  { current: 200, baseline: 200, expected: 0 },
+  { current: 230, baseline: 200, expected: 15 },
+  { current: 250, baseline: 200, expected: 25 },
+  { current: 170, baseline: 200, expected: -15 },
 ];
 for (const test of tests) {
-    const result = calculateChange(test.current, test.baseline);
-    const pass = Math.abs(result - test.expected) < 0.01;
-    console.log(`   $${test.baseline} → $${test.current}: ${result.toFixed(2)}% ${pass ? '✅' : '❌'}`);
+  const result = calculateChange(test.current, test.baseline);
+  const pass = Math.abs(result - test.expected) < 0.01;
+  console.log(
+    `   $${test.baseline} → $${test.current}: ${result.toFixed(2)}% ${pass ? '✅' : '❌'}`,
+  );
 }
 console.log();
 // Test 2: Trigger condition
 console.log('Test 2: Trigger Condition Logic');
 console.log('─────────────────────────────────────────────────');
 function shouldTrigger(currentPrice, config) {
-    const change = calculateChange(currentPrice, config.baseline);
-    return change >= config.triggerPercent;
+  const change = calculateChange(currentPrice, config.baseline);
+  return change >= config.triggerPercent;
 }
 const config = {
-    baseline: 200,
-    triggerPercent: 15,
+  baseline: 200,
+  triggerPercent: 15,
 };
 const priceTests = [
-    { price: 200, shouldFire: false }, // 0%
-    { price: 215, shouldFire: false }, // 7.5%
-    { price: 225, shouldFire: false }, // 12.5%
-    { price: 230, shouldFire: true }, // 15% - TRIGGER!
-    { price: 250, shouldFire: true }, // 25% - TRIGGER!
+  { price: 200, shouldFire: false }, // 0%
+  { price: 215, shouldFire: false }, // 7.5%
+  { price: 225, shouldFire: false }, // 12.5%
+  { price: 230, shouldFire: true }, // 15% - TRIGGER!
+  { price: 250, shouldFire: true }, // 25% - TRIGGER!
 ];
 for (const test of priceTests) {
-    const result = shouldTrigger(test.price, config);
-    const change = calculateChange(test.price, config.baseline);
-    const pass = result === test.shouldFire;
-    const status = result ? '🔥 FIRE' : '⏳ WAIT';
-    console.log(`   $${test.price} (${change.toFixed(1)}%): ${status} ${pass ? '✅' : '❌'}`);
+  const result = shouldTrigger(test.price, config);
+  const change = calculateChange(test.price, config.baseline);
+  const pass = result === test.shouldFire;
+  const status = result ? '🔥 FIRE' : '⏳ WAIT';
+  console.log(
+    `   $${test.price} (${change.toFixed(1)}%): ${status} ${pass ? '✅' : '❌'}`,
+  );
 }
 console.log();
 // Test 3: Action calculation
 console.log('Test 3: Action Calculation (Sell X%)');
 console.log('─────────────────────────────────────────────────');
 function calculateSellAmount(holdings, sellPercent) {
-    return (holdings * sellPercent) / 100;
+  return (holdings * sellPercent) / 100;
 }
 const holdingsTests = [
-    { holdings: 100, percent: 10, expected: 10 },
-    { holdings: 50, percent: 20, expected: 10 },
-    { holdings: 25.5, percent: 10, expected: 2.55 },
+  { holdings: 100, percent: 10, expected: 10 },
+  { holdings: 50, percent: 20, expected: 10 },
+  { holdings: 25.5, percent: 10, expected: 2.55 },
 ];
 for (const test of holdingsTests) {
-    const result = calculateSellAmount(test.holdings, test.percent);
-    const pass = Math.abs(result - test.expected) < 0.01;
-    console.log(`   ${test.holdings} ${test.percent}% = ${result.toFixed(2)} ${pass ? '✅' : '❌'}`);
+  const result = calculateSellAmount(test.holdings, test.percent);
+  const pass = Math.abs(result - test.expected) < 0.01;
+  console.log(
+    `   ${test.holdings} ${test.percent}% = ${result.toFixed(2)} ${pass ? '✅' : '❌'}`,
+  );
 }
 console.log();
 //Test 4: Complete trigger simulation
 console.log('Test 4: Complete Trigger Simulation');
 console.log('─────────────────────────────────────────────────');
 const state = {
-    triggered: false,
-    checkCount: 0,
+  triggered: false,
+  checkCount: 0,
 };
 function checkTrigger(price) {
-    if (state.triggered) {
-        console.log(`   Check ${++state.checkCount}: Already triggered, skipping`);
-        return false;
-    }
-    state.checkCount++;
-    const change = calculateChange(price, config.baseline);
-    console.log(`   Check ${state.checkCount}: $${price} (${change.toFixed(1)}%)`);
-    if (change >= config.triggerPercent) {
-        console.log(`      🔥 TRIGGER! Executing sell...`);
-        state.triggered = true;
-        return true;
-    }
-    console.log(`      ⏳ Waiting (need ${(config.triggerPercent - change).toFixed(1)}% more)`);
+  if (state.triggered) {
+    console.log(`   Check ${++state.checkCount}: Already triggered, skipping`);
     return false;
+  }
+  state.checkCount++;
+  const change = calculateChange(price, config.baseline);
+  console.log(
+    `   Check ${state.checkCount}: $${price} (${change.toFixed(1)}%)`,
+  );
+  if (change >= config.triggerPercent) {
+    console.log(`      🔥 TRIGGER! Executing sell...`);
+    state.triggered = true;
+    return true;
+  }
+  console.log(
+    `      ⏳ Waiting (need ${(config.triggerPercent - change).toFixed(1)}% more)`,
+  );
+  return false;
 }
 checkTrigger(200); // 0% - no trigger
 checkTrigger(215); // 7.5% - no trigger

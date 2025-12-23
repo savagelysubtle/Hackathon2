@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { Bell, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
+import { Bell, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount } from 'wagmi';
 
 export function Header() {
   const { address, isConnected } = useAccount();
@@ -43,4 +43,3 @@ export function Header() {
     </header>
   );
 }
-
