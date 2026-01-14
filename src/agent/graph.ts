@@ -54,6 +54,10 @@ const tools = createWardenTools(
   spacesManager,
   rebalancer,
 );
+console.log('GRAPH: Created tools:', tools.length);
+tools.forEach((t, i) => {
+  console.log(`GRAPH: Tool ${i}: ${t.name}, schema valid: ${!!t.schema._zod}`);
+});
 
 // Initialize LLM
 const llm = new ChatOpenAI({

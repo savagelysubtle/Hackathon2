@@ -24,9 +24,9 @@
     "agent:start": "bun run src/agent/recurring-executor.ts"
   },
   "dependencies": {
-    "@langchain/core": "^1.0.5",
-    "@langchain/langgraph": "^1.0.2",
-    "@langchain/openai": "^1.1.1",
+    "@langchain/core": "^1.1.15",
+    "@langchain/langgraph": "^1.0.15",
+    "@langchain/openai": "^1.2.2",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-progress": "^1.1.8",
@@ -56,7 +56,7 @@
     "tailwind-merge": "^3.4.0",
     "viem": "^2.39.0",
     "wagmi": "^2.19.4",
-    "zod": "^4.1.12"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
