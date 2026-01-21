@@ -8,6 +8,8 @@ import {
   Loader2,
   AlertCircle,
   Key,
+  Settings,
+  X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,32 +35,75 @@ export function ChatWidget() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [mode, setMode] = useState<'demo' | 'full-user' | 'full-server' | null>(
+  const [mode, setMode] = useState<'demo' | 'full-user' | 'full-server' | 'langgraph' | null>(
     null,
   );
   const [apiKey, setApiKey] = useState<string>('');
+  const [deploymentUrl, setDeploymentUrl] = useState<string>('http://localhost:8123');
+  const [graphId, setGraphId] = useState<string>('recurring_executor');
+  const [threadId, setThreadId] = useState<string | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Load API key from localStorage on mount
+  // Load configuration from localStorage on mount
   useEffect(() => {
     const storedKey = localStorage.getItem('openai_api_key');
     if (storedKey) {
       setApiKey(storedKey);
     }
+
+    const storedDeploymentUrl = localStorage.getItem('langgraph_deployment_url');
+    if (storedDeploymentUrl) {
+      setDeploymentUrl(storedDeploymentUrl);
+    }
+
+    const storedGraphId = localStorage.getItem('langgraph_graph_id');
+    if (storedGraphId) {
+      setGraphId(storedGraphId);
+    }
+
+    const storedThreadId = localStorage.getItem('langgraph_thread_id');
+    if (storedThreadId) {
+      setThreadId(storedThreadId);
+    }
   }, []);
 
-  // Re-check API key when widget opens
+  // Re-check configuration when widget opens
   useEffect(() => {
     if (isOpen) {
       const storedKey = localStorage.getItem('openai_api_key');
       if (storedKey) {
         setApiKey(storedKey);
       }
+
+      const storedDeploymentUrl = localStorage.getItem('langgraph_deployment_url');
+      if (storedDeploymentUrl) {
+        setDeploymentUrl(storedDeploymentUrl);
+      }
+
+      const storedGraphId = localStorage.getItem('langgraph_graph_id');
+      if (storedGraphId) {
+        setGraphId(storedGraphId);
+      }
+
+      const storedThreadId = localStorage.getItem('langgraph_thread_id');
+      if (storedThreadId) {
+        setThreadId(storedThreadId);
+      }
     }
   }, [isOpen]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const saveLangGraphConfig = () => {
+    localStorage.setItem('langgraph_deployment_url', deploymentUrl);
+    localStorage.setItem('langgraph_graph_id', graphId);
+    if (apiKey) {
+      localStorage.setItem('openai_api_key', apiKey);
+    }
+    setShowSettings(false);
   };
 
   useEffect(() => {
@@ -79,12 +124,15 @@ export function ChatWidget() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('/api/langgraph-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: input,
-          userApiKey: apiKey || undefined, // Send user's key if they have one
+          deploymentUrl: deploymentUrl,
+          graphId: graphId,
+          threadId: threadId,
+          apiKey: apiKey || undefined, // Send API key if they have one
         }),
       });
 
@@ -111,31 +159,36 @@ export function ChatWidget() {
         const chunk = decoder.decode(value);
         const lines = chunk.split('\n');
 
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              if (data.type === 'token') {
-                agentContent += data.content;
-                // Update the last message
-                setMessages((prev) => {
-                  const newMessages = [...prev];
-                  const lastMessage = newMessages[newMessages.length - 1];
-                  if (lastMessage && lastMessage.role === 'agent') {
-                    lastMessage.content = agentContent;
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(line.slice(6));
+                  if (data.type === 'token') {
+                    agentContent += data.content;
+                    // Update the last message
+                    setMessages((prev) => {
+                      const newMessages = [...prev];
+                      const lastMessage = newMessages[newMessages.length - 1];
+                      if (lastMessage && lastMessage.role === 'agent') {
+                        lastMessage.content = agentContent;
+                      }
+                      return newMessages;
+                    });
+                    // Save threadId if provided
+                    if (data.threadId && !threadId) {
+                      setThreadId(data.threadId);
+                      localStorage.setItem('langgraph_thread_id', data.threadId);
+                    }
+                  } else if (data.type === 'mode') {
+                    setMode(data.mode); // Track what mode we're in
+                  } else if (data.type === 'error') {
+                    throw new Error(data.error);
                   }
-                  return newMessages;
-                });
-              } else if (data.type === 'mode') {
-                setMode(data.mode); // Track what mode we're in
-              } else if (data.type === 'error') {
-                throw new Error(data.error);
+                } catch (e) {
+                  // Ignore parse errors
+                }
               }
-            } catch (e) {
-              // Ignore parse errors
             }
-          }
-        }
       }
     } catch (error: any) {
       setMessages((prev) => [
@@ -179,17 +232,86 @@ export function ChatWidget() {
             <div>
               <h3 className="font-semibold">Agent Chat</h3>
               <p className="text-xs text-muted-foreground">
-                AI-powered assistant
+                LangGraph-powered assistant
               </p>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsOpen(false)}
-            >
-              <Minimize2 className="w-5 h-5" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowSettings(!showSettings)}
+              >
+                <Settings className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsOpen(false)}
+              >
+                <Minimize2 className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
+
+          {/* Settings Panel */}
+          {showSettings && (
+            <div className="p-4 border-b bg-muted/50">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-medium">LangGraph Configuration</h4>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowSettings(false)}
+                  className="h-6 w-6"
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground block mb-1">
+                    Deployment URL
+                  </label>
+                  <Input
+                    value={deploymentUrl}
+                    onChange={(e) => setDeploymentUrl(e.target.value)}
+                    placeholder="http://localhost:2024"
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground block mb-1">
+                    Graph/Assistant ID
+                  </label>
+                  <Input
+                    value={graphId}
+                    onChange={(e) => setGraphId(e.target.value)}
+                    placeholder="agent"
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground block mb-1">
+                    API Key (optional)
+                  </label>
+                  <Input
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="•••••••••••••••••••••••••••••••••••••••••••••••••••"
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <Button
+                  onClick={saveLangGraphConfig}
+                  size="sm"
+                  className="w-full h-8 text-xs"
+                >
+                  Save Configuration
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* Mode Indicator Banner */}
           {mode === 'demo' && (
@@ -224,6 +346,24 @@ export function ChatWidget() {
               <AlertDescription className="text-green-800 text-xs">
                 <strong>Full Mode</strong> - Using your API key for unlimited
                 queries.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {mode === 'langgraph' && (
+            <Alert className="m-3 bg-blue-50 border-blue-200">
+              <MessageCircle className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-800 text-xs">
+                <strong>LangGraph Mode</strong> - Connected to {deploymentUrl} ({graphId})
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {mode === 'demo' && apiKey && (
+            <Alert className="m-3 bg-amber-50 border-amber-200">
+              <AlertCircle className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-800 text-xs">
+                <strong>Demo Mode</strong> - LangGraph connection failed. Check server configuration and API keys.
               </AlertDescription>
             </Alert>
           )}

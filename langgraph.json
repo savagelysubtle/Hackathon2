@@ -1,7 +1,7 @@
 {
   "dependencies": ["."],
   "graphs": {
-    "recurring_executor": {
+    "agent": {
       "path": "./src/agent/graph.ts",
       "description": "Recurring Executor Agent - AI-powered DeFi portfolio automation with scheduled rebalancing, price-based triggers, and natural language control. Built for Warden Protocol Agent Hub.",
       "input_schema": {

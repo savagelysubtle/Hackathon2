@@ -33,3 +33,5 @@ dashboard/
 
 # LangGraph API
 .langgraph_api
+
+.vercel

@@ -1,3 +1,4 @@
+import { CompiledStateGraph } from '@langchain/langgraph';
 import { WardenAgentKit } from '@wardenprotocol/warden-agent-kit-core';
 import * as dotenv from 'dotenv';
 import { graph, invokeAgent } from '../agent/graph.js';
@@ -153,7 +154,7 @@ export class RecurringExecutorAgent {
   /**
    * Get the LangGraph instance
    */
-  getGraph() {
+  getGraph(): CompiledStateGraph<any, any, any, any, any, any> {
     return graph;
   }
 

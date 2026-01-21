@@ -17,14 +17,15 @@ export function createWardenTools(
   rebalancer?: PortfolioRebalancer,
 ) {
   return [
+    // ==================== BASIC TOOLS ====================
     new DynamicStructuredTool({
       name: 'get_portfolio',
-      description: 'Get portfolio data',
+      description: 'Get current portfolio data and balances',
       schema: z.object({
-        walletAddress: z.string().describe('Wallet address'),
+        walletAddress: z.string(),
       }),
       func: async ({ walletAddress }) => {
-        return `Portfolio for ${walletAddress}`;
+        return `Portfolio data for ${walletAddress}`;
       },
     }),
   ];

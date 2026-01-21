@@ -1,7 +1,6 @@
 import { AIMessage, HumanMessage } from '@langchain/core/messages';
 import { RunnableConfig } from '@langchain/core/runnables';
-import { END, MemorySaver, StateGraph } from '@langchain/langgraph';
-import { ToolNode } from '@langchain/langgraph/prebuilt';
+import { CompiledStateGraph, END, MemorySaver, StateGraph } from '@langchain/langgraph';
 import { ChatOpenAI } from '@langchain/openai';
 import { WardenAgentKit } from '@wardenprotocol/warden-agent-kit-core';
 import * as dotenv from 'dotenv';
@@ -10,7 +9,6 @@ import { PriceFetcher } from '../oracle/price-fetcher.js';
 import { PortfolioRebalancer } from '../strategies/rebalancer.js';
 import { getSpacesManager } from '../warden/spaces-manager.js';
 import { Portfolio, StateAnnotation, Trigger } from './state.js';
-import { createWardenTools } from './tools.js';
 
 // Load environment variables
 dotenv.config();
@@ -46,25 +44,53 @@ try {
   console.warn('Rebalancer not configured:', (error as Error).message);
 }
 
-// Create tools
-const tools = createWardenTools(
-  agentkit,
-  priceFetcher,
-  swapExecutor,
-  spacesManager,
-  rebalancer,
-);
-console.log('GRAPH: Created tools:', tools.length);
-tools.forEach((t, i) => {
-  console.log(`GRAPH: Tool ${i}: ${t.name}, schema valid: ${!!t.schema._zod}`);
-});
+// Create tools (temporarily disabled for debugging)
+// const tools = createWardenTools(
+//   agentkit,
+//   priceFetcher,
+//   swapExecutor,
+//   spacesManager,
+//   rebalancer,
+// );
+// console.log('GRAPH: Created tools:', tools.length);
 
 // Initialize LLM
-const llm = new ChatOpenAI({
-  modelName: 'gpt-4o-mini',
-  temperature: 0.7,
-  apiKey: process.env.OPENAI_API_KEY,
-}).bindTools(tools);
+// Set OPENAI_API_KEY in .env to use OpenAI
+// Or set LLM_BASE_URL=http://localhost:1234/v1 for LM Studio
+const apiKey = process.env.OPENAI_API_KEY?.trim();
+const modelName = process.env.LLM_MODEL || 'gpt-4o-mini';
+
+// Debug: Check if API key is loaded
+if (apiKey) {
+  console.log(`🔑 OpenAI API Key loaded: ${apiKey.substring(0, 7)}...${apiKey.substring(apiKey.length - 4)}`);
+} else {
+  console.log('⚠️  WARNING: OPENAI_API_KEY not found in environment!');
+}
+
+const llmConfig: {
+  modelName: string;
+  temperature?: number;
+  apiKey: string;
+  configuration?: { baseURL: string };
+} = {
+  modelName,
+  apiKey: apiKey || 'lm-studio',
+};
+
+// Only set temperature for models that support it (gpt-5 doesn't support custom temperature)
+if (!modelName.startsWith('gpt-5')) {
+  llmConfig.temperature = 0.7;
+}
+
+// Only set custom baseURL if LLM_BASE_URL is provided (for LM Studio)
+if (process.env.LLM_BASE_URL) {
+  llmConfig.configuration = { baseURL: process.env.LLM_BASE_URL };
+  console.log(`🔧 Using custom LLM endpoint: ${process.env.LLM_BASE_URL}`);
+} else {
+  console.log(`🤖 Using OpenAI model: ${llmConfig.modelName}`);
+}
+
+const llm = new ChatOpenAI(llmConfig);
 
 // Store conversation history
 const memory = new MemorySaver();
@@ -122,9 +148,9 @@ ${state.lastRebalance ? `- Last Rebalance: ${state.lastRebalance.toISOString()}`
 
 /**
  * Tools Node
- * Executes tool calls made by the agent
+ * Executes tool calls made by the agent (disabled for debugging)
  */
-const toolsNode = new ToolNode(tools);
+// const toolsNode = new ToolNode(tools);
 
 /**
  * Check Triggers Node
@@ -334,21 +360,10 @@ async function updatePortfolioNode(
 // ==================== CONDITIONAL EDGES ====================
 
 /**
- * Determine if agent should continue, call tools, or end
+ * Determine if agent should continue or end (simplified without tools)
  */
 function shouldContinue(state: typeof StateAnnotation.State): string {
-  const lastMessage = state.messages[state.messages.length - 1];
-
-  // Check if there are tool calls
-  if (
-    lastMessage &&
-    'tool_calls' in lastMessage.additional_kwargs &&
-    lastMessage.additional_kwargs.tool_calls &&
-    lastMessage.additional_kwargs.tool_calls.length > 0
-  ) {
-    return 'tools';
-  }
-
+  // For now, just end after one response
   return END;
 }
 
@@ -392,20 +407,16 @@ function _shouldRebalance(state: typeof StateAnnotation.State): string {
 const workflow = new StateGraph(StateAnnotation)
   // Add nodes
   .addNode('agent', agentNode)
-  .addNode('tools', toolsNode)
   .addNode('updatePortfolio', updatePortfolioNode)
 
   // Add edges
   .addEdge('__start__', 'updatePortfolio')
   .addEdge('updatePortfolio', 'agent')
-  .addConditionalEdges('agent', shouldContinue, {
-    tools: 'tools',
-    [END]: END,
-  })
-  .addEdge('tools', 'agent');
+  .addEdge('agent', END);
 
 // Compile graph with checkpointing
-export const graph = workflow.compile({
+
+export const graph: CompiledStateGraph<any, any, any, any, any, any> = workflow.compile({
   checkpointer: memory,
 });
 
@@ -420,7 +431,7 @@ export async function invokeAgent(
   message: string,
   walletAddress?: string,
   threadId: string = 'default',
-) {
+): Promise<typeof StateAnnotation.State> {
   const config = {
     configurable: {
       thread_id: threadId,
@@ -445,7 +456,7 @@ export async function streamAgent(
   message: string,
   walletAddress?: string,
   threadId: string = 'default',
-) {
+): Promise<AsyncGenerator<unknown, void, unknown>> {
   const config = {
     configurable: {
       thread_id: threadId,

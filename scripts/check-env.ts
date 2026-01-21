@@ -12,6 +12,8 @@ console.log('──────────────────────�
 
 const privateKey = process.env.PRIVATE_KEY;
 const openaiKey = process.env.OPENAI_API_KEY;
+const llmModel = process.env.LLM_MODEL;
+const llmBaseUrl = process.env.LLM_BASE_URL;
 
 console.log(
   'PRIVATE_KEY:    ',
@@ -22,8 +24,16 @@ console.log(
 console.log(
   'OPENAI_API_KEY: ',
   openaiKey && openaiKey !== 'your-openai-api-key-here'
-    ? '✅ Set'
-    : '⚠️  Not set (optional for now)',
+    ? '✅ Set (OpenAI)'
+    : '⚠️  Not set',
+);
+console.log(
+  'LLM_MODEL:       ',
+  llmModel || 'gpt-4o-mini (default)',
+);
+console.log(
+  'LLM_BASE_URL:    ',
+  llmBaseUrl ? `✅ Set (${llmBaseUrl})` : '❌ Not set (required for LM Studio)',
 );
 console.log();
 
@@ -31,6 +41,24 @@ if (!privateKey || privateKey === '0xyour-private-key-here') {
   console.log('❌ ERROR: PRIVATE_KEY not configured properly');
   console.log('Run: bun run generate-wallet\n');
   process.exit(1);
+}
+
+// Check LLM configuration (OpenAI or LM Studio)
+const hasOpenAI = openaiKey && openaiKey !== 'your-openai-api-key-here';
+const hasLMStudio = llmBaseUrl && llmBaseUrl.includes('localhost:1234');
+
+if (!hasOpenAI && !hasLMStudio) {
+  console.log('❌ ERROR: No LLM configuration found');
+  console.log('Either set OPENAI_API_KEY or configure LM Studio:');
+  console.log('  LLM_BASE_URL=http://localhost:1234/v1');
+  console.log('  LLM_MODEL=your-local-model-name\n');
+  process.exit(1);
+}
+
+if (hasLMStudio) {
+  console.log('✅ Using LM Studio (local LLM)\n');
+} else if (hasOpenAI) {
+  console.log('✅ Using OpenAI API\n');
 }
 
 // Validate private key format

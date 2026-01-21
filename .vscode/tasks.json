@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Start Dashboard Dev Server",
+      "label": "Start Dashboard",
       "type": "shell",
       "command": "bun",
       "args": ["run", "dev"],
@@ -15,7 +15,7 @@
         "focus": false,
         "panel": "dedicated",
         "showReuseMessage": true,
-        "clear": false
+        "clear": true
       },
       "isBackground": true,
       "problemMatcher": {
@@ -30,13 +30,58 @@
           "beginsPattern": ".",
           "endsPattern": "(Local:|ready)"
         }
-      },
-      "runOptions": {
-        "runOn": "default"
       }
     },
     {
-      "label": "Stop Dashboard Dev Server (Port 3000)",
+      "label": "Start LangGraph Server",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "$envContent = Get-Content .env; $key = ($envContent | Select-String '^OPENAI_API_KEY=').Line -replace '^OPENAI_API_KEY=',''; $env:OPENAI_API_KEY = $key; bun run langgraph:serve"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": true,
+        "clear": true
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^$",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "(LangGraph Server|API Endpoints)"
+        }
+      }
+    },
+    {
+      "label": "Start Dashboard + Agent",
+      "dependsOn": ["Start Dashboard", "Start LangGraph Server"],
+      "dependsOrder": "parallel",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Stop Dashboard (Port 3000)",
       "type": "shell",
       "command": "powershell",
       "args": [
@@ -50,8 +95,49 @@
       "problemMatcher": []
     },
     {
-      "label": "Restart Dashboard Dev Server",
-      "dependsOn": ["Stop Dashboard Dev Server (Port 3000)", "Start Dashboard Dev Server"],
+      "label": "Stop LangGraph Server (Port 2024)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "$port = Get-NetTCPConnection -LocalPort 2024 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess; if ($port) { Stop-Process -Id $port -Force; Write-Host 'Stopped process on port 2024' } else { Write-Host 'No process running on port 2024' }"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Stop All Servers",
+      "dependsOn": ["Stop Dashboard (Port 3000)", "Stop LangGraph Server (Port 2024)"],
+      "dependsOrder": "parallel",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Restart Dashboard",
+      "dependsOn": ["Stop Dashboard (Port 3000)", "Start Dashboard"],
+      "dependsOrder": "sequence",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Restart LangGraph Server",
+      "dependsOn": ["Stop LangGraph Server (Port 2024)", "Start LangGraph Server"],
+      "dependsOrder": "sequence",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Restart All",
+      "dependsOn": ["Stop All Servers", "Start Dashboard + Agent"],
       "dependsOrder": "sequence",
       "presentation": {
         "reveal": "always"
@@ -74,25 +160,6 @@
         "showReuseMessage": true,
         "clear": false
       },
-      "problemMatcher": []
-    },
-    {
-      "label": "Start LangGraph Agent",
-      "type": "shell",
-      "command": "bun",
-      "args": ["run", "agent:start"],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated",
-        "showReuseMessage": true,
-        "clear": false
-      },
-      "isBackground": true,
       "problemMatcher": []
     }
   ]
